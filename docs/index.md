@@ -42,5 +42,5 @@ uv sync
 ## Next Steps
 
 *   [**Getting Started**](user_guide/getting_started.md): Installation and first steps.
-*   [**Architecture**](reference/architecture.md): Understand how the Controller, Devices, and Plugins work together.
-*   [**Controller API**](reference/controller_api.md): Full reference for the main `PymordialBluestacksController`.
+*   [**Architecture**](user_guide/core_concepts.md): Understand how the Controller, Devices, and Plugins work together.
+*   [**Controller API**](reference/controller.md): Full reference for the main `PymordialBluestacksController`.
