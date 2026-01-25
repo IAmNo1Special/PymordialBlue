@@ -41,6 +41,40 @@ def test_load_config(mock_file, mock_yaml, mock_user_path, mock_default_path):
 
     config = get_config()
     assert config["key"] == "default"
+    assert mock_default_path.exists.called
+    assert mock_user_path.exists.called  # It is called to check existence
+
+
+@patch("pymordialblue.utils.configs._DEFAULT_CONFIG_PATH")
+@patch("pymordialblue.utils.configs._USER_CONFIG_PATH")
+@patch("yaml.safe_load")
+@patch("builtins.open", new_callable=mock_open)
+def test_load_config_with_override(
+    mock_file, mock_yaml, mock_user_path, mock_default_path
+):
+    """Test configuration loading with user overrides."""
+    from pymordialblue.utils import configs
+
+    configs._CONFIG = None
+
+    mock_default_path.exists.return_value = True
+    mock_user_path.exists.return_value = True
+
+    # First call for default, second for user
+    mock_yaml.side_effect = [
+        {
+            "adb": {"commands": {}},
+            "bluestacks": {"ui": {"assets": {}}},
+            "ui": {},
+            "extract_strategy": {},
+            "setup": {},
+            "key": "default",
+        },
+        {"key": "user"},
+    ]
+
+    config = get_config()
+    assert config["key"] == "user"
 
 
 def test_validate_config_error():
@@ -49,3 +83,10 @@ def test_validate_config_error():
 
     with pytest.raises(ValueError, match="Missing required config section: adb"):
         _validate_config({})
+
+    with pytest.raises(
+        ValueError, match="Missing required config section: bluestacks.ui"
+    ):
+        _validate_config(
+            {"adb": {}, "bluestacks": {}, "ui": {}, "extract_strategy": {}, "setup": {}}
+        )
