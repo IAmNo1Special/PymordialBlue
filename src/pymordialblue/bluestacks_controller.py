@@ -376,7 +376,7 @@ class PymordialBluestacksController(PymordialController):
 
         Args:
             pymordial_element: The element to find.
-            screenshot_img_bytes: Optional pre-captured screenshot.
+            pymordial_screenshot: Optional pre-captured screenshot.
             max_tries: Maximum number of retries.
 
         Returns:
