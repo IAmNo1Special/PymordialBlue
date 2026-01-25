@@ -49,7 +49,7 @@ def test_adb_device_get_focused_app(mock_adb_device):
 
 def test_adb_device_is_app_running(mock_adb_device):
     """Test app running check."""
-    device = PymordialAdbDevice(host="127.0.0.0", port=5555)
+    device = PymordialAdbDevice(host="127.0.0.1", port=5555)
     device._device = mock_adb_device
 
     # pidof returns a PID if running
