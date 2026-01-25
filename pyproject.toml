@@ -1,0 +1,31 @@
+[project]
+name = "pymordialblue"
+version = "0.1.0"
+description = "PymordialBlue: Advanced Android Automation for BlueStacks using Pymordial"
+readme = "README.md"
+authors = [
+    { name = "Malcom Godlike", email = "ivmno1special@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "adb-shell>=0.4.4",
+    "av>=16.1.0",
+    "numpy>=2.4.1",
+    "opencv-python-headless>=4.13.0.90",
+    "pillow>=12.1.0",
+    "psutil>=7.2.1",
+    "pymordial",
+    "pytesseract>=0.3.13",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.8,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+pymordial = { path = ".././Pymordial", editable = true }
+
+[project.entry-points."pymordial.plugins"]
+adb = "pymordialblue.devices.adb_device:PymordialAdbDevice"
+ui = "pymordialblue.devices.ui_device:PymordialUiDevice"
+bluestacks = "pymordialblue.devices.bluestacks_device:PymordialBluestacksDevice"

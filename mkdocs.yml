@@ -1,0 +1,50 @@
+site_name: PymordialBlue
+site_description: The universal python automation framework.
+site_url: https://github.com/IAmNo1Special/PymordialBlue
+repo_url: https://github.com/IAmNo1Special/PymordialBlue
+repo_name: IAmNo1Special/PymordialBlue
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.expand
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: purple
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: purple
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - Getting Started: user_guide/getting_started.md
+      - Configuration: user_guide/configuration.md
+      - App Management: user_guide/app_management.md
+  - Reference:
+      - Architecture: reference/architecture.md
+      - Controller API: reference/controller_api.md
+      - Devices API: reference/devices_api.md
