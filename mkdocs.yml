@@ -42,6 +42,8 @@ nav:
   - Home: index.md
   - User Guide:
       - Overview: user_guide/index.md
+      - Getting Started: user_guide/getting_started.md
+      - App Management: user_guide/app_management.md
       - Configuration: user_guide/configuration.md
       - Core Concepts: user_guide/core_concepts.md
       - Extract Strategies: user_guide/extract_strategies.md
