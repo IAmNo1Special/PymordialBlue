@@ -8,11 +8,11 @@ import numpy as np
 import pytesseract
 from pymordial.core.blueprints.ocr_device import PymordialOCRDevice
 
+from pymordialblue.utils.configs import get_config
 from pymordialblue.utils.extract_strategies import (
     DefaultExtractStrategy,
     PymordialExtractStrategy,
 )
-from pymordialblue.utils.configs import get_config
 
 logger = logging.getLogger(__name__)
 
