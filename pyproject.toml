@@ -39,3 +39,7 @@ dev = [
 adb = "pymordialblue.devices.adb_device:PymordialAdbDevice"
 ui = "pymordialblue.devices.ui_device:PymordialUiDevice"
 bluestacks = "pymordialblue.devices.bluestacks_device:PymordialBluestacksDevice"
+
+[tool.isort]
+profile = "black"
+line_length = 88
