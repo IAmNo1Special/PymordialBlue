@@ -51,6 +51,7 @@ nav:
           - UI: user_guide/devices/ui.md
           - Tesseract: user_guide/devices/tesseract.md
   - Reference:
-      - Architecture: reference/architecture.md
-      - Controller API: reference/controller_api.md
-      - Devices API: reference/devices_api.md
+      - Controller: reference/controller.md
+      - App Model: reference/android_app.md
+      - Devices: reference/devices.md
+      - Utilities: reference/utils.md
