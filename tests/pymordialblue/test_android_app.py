@@ -29,6 +29,3 @@ def test_android_app_check_ready(mock_controller):
 
     assert app.check_ready() is True
     assert app.is_open() is True
-    # Success! Second call not needed since it's already READY.
-    assert app.is_open() is True
-    # Success! Second call not needed since it's already READY.

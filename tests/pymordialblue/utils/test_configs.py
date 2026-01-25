@@ -49,6 +49,3 @@ def test_validate_config_error():
 
     with pytest.raises(ValueError, match="Missing required config section: adb"):
         _validate_config({})
-
-    with pytest.raises(ValueError, match="Missing required config section: adb"):
-        _validate_config({})

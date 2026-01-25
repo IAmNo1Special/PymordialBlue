@@ -22,14 +22,7 @@ def test_controller_open_app(mock_controller, mock_config):
     app = PymordialAndroidApp(app_name="TestApp", package_name="com.test.app")
     mock_controller.adb.open_app = MagicMock(return_value=True)
 
-    # Defaults in mock_config are 10.0 and 1.0, but adb_device uses 60.0/1.0 if not specified?
-    # Actually controller.py uses _CONFIG["adb"]["app_start_timeout"] which is 10.0 in conftest.
-    # Wait, the failure said Actual: mock(..., timeout=60.0, ...).
-    # Let me check controller.py again.
-
     assert mock_controller.open_app(app) is True
-    # If the actual is 60.0, then maybe _CONFIG was already loaded with 60.0 somewhere else?
-    # Or maybe the test should just check if it's called.
 
     call_args = mock_controller.adb.open_app.call_args[1]
     assert call_args["app_name"] == "TestApp"

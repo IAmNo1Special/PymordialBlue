@@ -82,8 +82,3 @@ def test_ui_device_find_text(mock_pytesseract, mock_cv2):
         "Target", pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
     )
     assert coords == (60, 65)
-    # Center of (50, 60, 20, 10) is (60, 65)
-    coords = device.find_text(
-        "Target", pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
-    )
-    assert coords == (60, 65)
