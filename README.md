@@ -63,11 +63,11 @@ if controller.is_bluestacks_ready():
 
 Full documentation is available in the `docs/` directory or via the [MkDocs site](https://iamno1special.github.io/PymordialBlue).
 
-*   [User Guide](docs/user_guide/index.md)
-*   [Core Concepts](docs/user_guide/core_concepts.md)
-*   [UI Interaction](docs/user_guide/devices/ui.md)
-*   [Configuration](docs/user_guide/configuration.md)
-*   [Examples](examples/README.md)
+*   [User Guide](https://github.com/IAmNo1Special/PymordialBlue/blob/main/docs/user_guide/index.md)
+*   [Core Concepts](https://github.com/IAmNo1Special/PymordialBlue/blob/main/docs/user_guide/core_concepts.md)
+*   [UI Interaction](https://github.com/IAmNo1Special/PymordialBlue/blob/main/docs/user_guide/devices/ui.md)
+*   [Configuration](https://github.com/IAmNo1Special/PymordialBlue/blob/main/docs/user_guide/configuration.md)
+*   [Examples](https://github.com/IAmNo1Special/PymordialBlue/blob/main/examples/README.md)
 
 ---
 
