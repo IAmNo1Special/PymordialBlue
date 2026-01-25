@@ -918,6 +918,7 @@ dependencies = [
     { name = "psutil" },
     { name = "pymordial" },
     { name = "pytesseract" },
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -942,6 +943,7 @@ requires-dist = [
     { name = "psutil", specifier = ">=7.2.1" },
     { name = "pymordial", specifier = ">=0.4.1" },
     { name = "pytesseract", specifier = ">=0.3.13" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
 ]
 
 [package.metadata.requires-dev]
