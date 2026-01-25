@@ -243,6 +243,8 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         except Exception as e:
             self.logger.error(f"Failed to execute shell command {command}: {e}")
             return None
+        if output and decode and isinstance(output, str):
+            output = output.strip()
         self.logger.debug(f"Shell command {command} executed successfully.")
         return output
 

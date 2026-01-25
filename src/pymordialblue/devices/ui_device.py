@@ -19,9 +19,9 @@ from pymordial.ui.image import PymordialImage
 from pymordial.ui.pixel import PymordialPixel
 
 from pymordialblue.devices.adb_device import PymordialAdbDevice
-from pymordialblue.utils.extract_strategies import PymordialExtractStrategy
 from pymordialblue.devices.tesseract_device import PymordialTesseractDevice
 from pymordialblue.utils.configs import VisionConfig, get_config
+from pymordialblue.utils.extract_strategies import PymordialExtractStrategy
 
 if TYPE_CHECKING:
     from pymordialblue.utils.configs import PymordialBlueConfig

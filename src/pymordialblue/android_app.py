@@ -1,10 +1,10 @@
 """Core application logic for Pymordial."""
 
+from pymordial.core.app import PymordialApp
 from pymordial.core.controller import PymordialController
 from pymordial.core.screen import PymordialScreen
 from pymordial.core.state_machine import AppState
 from pymordial.ui.element import PymordialElement
-from pymordial.core.app import PymordialApp
 
 
 class PymordialAndroidApp(PymordialApp):
