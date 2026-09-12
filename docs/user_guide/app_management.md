@@ -1,13 +1,13 @@
 # App Management
 
-PymordialBlue provides a structured way to manage Android applications using the `PymordialAndroidApp` class. This wrapper handles opening, closing, and tracking the state of your app.
+PymordialBlue provides a structured way to manage Android applications using the `AndroidApp` class. This wrapper handles opening, closing, and tracking the state of your app.
 
 ## Defining an App
 
 You define an app by its name and package name. You can also optionally define a "Ready Element" — a UI element that, when visible, confirms the app is fully loaded and ready for interaction.
 
 ```python
-from pymordialblue import PymordialAndroidApp
+from pymordialdroid.android_app import AndroidApp
 from pymordial.ui.text import PymordialText
 
 # Define an element that only appears on the main menu
@@ -17,7 +17,7 @@ main_menu_title = PymordialText(
 )
 
 # Create the app instance
-my_game = PymordialAndroidApp(
+my_game = AndroidApp(
     app_name="Super Game",
     package_name="com.super.game",
     ready_element=main_menu_title  # Optional auto-ready check

@@ -14,7 +14,7 @@ from pymordial.core.screen import PymordialScreen
 from pymordial.ui.image import PymordialImage
 from pymordial.ui.text import PymordialText
 
-from pymordialblue.android_app import PymordialAndroidApp
+from pymordialdroid.android_app import AndroidApp
 from pymordialblue.bluestacks_controller import PymordialBluestacksController
 
 logger = getLogger(__name__)
@@ -33,7 +33,7 @@ def main():
     # Define your custom app
     # TODO: Replace with your app name and package name
     logger.info("2. Defining custom app...")
-    my_game = PymordialAndroidApp(app_name="MyGame", package_name="com.example.mygame")
+    my_game = AndroidApp(app_name="MyGame", package_name="com.example.mygame")
     logger.info(f"   Created app: {my_game}\n")
 
     # Create main menu screen

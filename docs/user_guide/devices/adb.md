@@ -1,13 +1,15 @@
 # ADB Device
 
-The `PymordialAdbDevice` class (`src/pymordialblue/devices/adb_device.py`) is responsible for all low-level communication with the Android instance. It wraps `adb-shell` to provide a pythonic interface for commands, input, and video streaming.
+The `AdbDevice` class (`src/pymordialblue/...` resolved from `pymordialdroid.devices.adb_device`) is responsible for all low-level communication with the Android instance. It wraps `adb-shell` to provide a pythonic interface for commands, input, and video streaming.
 
 ## Connection
 
 The device connects to the host and port specified in the configuration (default `127.0.0.1:5555`).
 
 ```python
-adb = PymordialAdbDevice()
+from pymordialdroid.devices.adb_device import AdbDevice
+
+adb = AdbDevice()
 adb.connect()
 if adb.is_connected():
     print("Connected!")

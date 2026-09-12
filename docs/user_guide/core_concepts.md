@@ -17,9 +17,9 @@ controller = PymordialBluestacksController(adb_host="127.0.0.1", adb_port=5555)
 ```
 
 The controller initializes three main sub-components, accessible as attributes:
-1.  **`controller.adb`** (`PymordialAdbDevice`): For sending shell commands and streaming video.
+1.  **`controller.adb`** (`AdbDevice`): For sending shell commands and streaming video.
 2.  **`controller.bluestacks`** (`PymordialBluestacksDevice`): For managing the emulator window/process.
-3.  **`controller.ui`** (`PymordialUiDevice`): For finding images and text on screen.
+3.  **`controller.ui`** (`AndroidUiDevice`): For finding images and text on screen.
 
 ### Common Operations
 
@@ -38,16 +38,16 @@ The controller initializes three main sub-components, accessible as attributes:
 
 ---
 
-## PymordialAndroidApp
+## AndroidApp
 
-The `PymordialAndroidApp` class (`src/pymordialblue/android_app.py`) provides a structured way to model the applications you are automating. It maintains a lifecycle state (`CLOSED` -> `LOADING` -> `READY`).
+The `AndroidApp` class (`src/pymordialblue/android_app.py`) provides a structured way to model the applications you are automating. It maintains a lifecycle state (`CLOSED` -> `LOADING` -> `READY`).
 
 ### defining an App
 
-To automate a specific game or app, subclass `PymordialAndroidApp`:
+To automate a specific game or app, subclass `AndroidApp`:
 
 ```python
-from pymordialblue.android_app import PymordialAndroidApp
+from pymordialdroid.android_app import AndroidApp
 from pymordial.ui.image import PymordialImage
 
 # Define a UI element that indicates the app is fully loaded
@@ -56,7 +56,7 @@ MAIN_MENU_LOGO = PymordialImage(
     filepath="assets/logo.png"
 )
 
-class MyGame(PymordialAndroidApp):
+class MyGame(AndroidApp):
     def __init__(self):
         super().__init__(
             app_name="My Game",

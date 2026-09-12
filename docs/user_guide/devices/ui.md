@@ -1,6 +1,6 @@
 # UI Device
 
-The `PymordialUiDevice` class (`src/pymordialblue/devices/ui_device.py`) provides the "eyes" of the framework. It handles image recognition, pixel color validation, and text reading.
+The `AndroidUiDevice` class (`src/pymordialblue/...` resolved from `pymordialdroid.devices.ui_device`) provides the "eyes" of the framework. It handles image recognition, pixel color validation, and text reading.
 
 ## Element Finding (Template Matching)
 

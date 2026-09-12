@@ -1,6 +1,6 @@
 # App Model API
 
-::: pymordialblue.android_app
+::: pymordialdroid.android_app
     options:
       show_root_heading: true
       show_source: true
