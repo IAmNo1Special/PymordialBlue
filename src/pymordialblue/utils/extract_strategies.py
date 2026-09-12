@@ -6,11 +6,25 @@ import re
 import cv2
 import numpy as np
 from pymordial.core.blueprints.extract_strategy import PymordialExtractStrategy
-from pymordialdroid.utils.extract_strategies import DefaultExtractStrategy
 
 from pymordialblue.utils.configs import get_config
 
 _CONFIG = get_config()
+
+# --- Default Strategy Constants ---
+DEFAULT_UPSCALE_FACTOR = _CONFIG["extract_strategy"]["default"]["upscale_factor"]
+DEFAULT_DENOISE_STRENGTH = _CONFIG["extract_strategy"]["default"]["denoise_strength"]
+DEFAULT_DENOISE_TEMPLATE_WINDOW = _CONFIG["extract_strategy"]["default"][
+    "denoise_template_window"
+]
+DEFAULT_DENOISE_SEARCH_WINDOW = _CONFIG["extract_strategy"]["default"][
+    "denoise_search_window"
+]
+THRESHOLD_BINARY_MAX = _CONFIG["extract_strategy"]["default"]["threshold_binary_max"]
+INVERSION_THRESHOLD_MEAN = _CONFIG["extract_strategy"]["default"][
+    "inversion_threshold_mean"
+]
+TESSERACT_CONFIG_DEFAULT = _CONFIG["extract_strategy"]["default"]["tesseract_config"]
 
 # --- Revomon Strategy Constants ---
 MODE_DEFAULT = "default"
@@ -48,7 +62,53 @@ LEVEL_WHITELIST_CONFIG = _CONFIG["extract_strategy"]["revomon"]["level"][
 ]
 
 
-class RevomonTextStrategy(DefaultExtractStrategy):
+class ExtractStrategy(PymordialExtractStrategy):
+    """Generic preprocessing suitable for any image.
+
+    Features:
+    - Upscale 2×
+    - Grayscale conversion
+    - Denoising
+    - Otsu thresholding
+    - Inversion if needed (ensuring black text on white background)
+    - Uses standard Tesseract config ``--oem 3 --psm 6``.
+    """
+
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
+        """Preprocesses the image using standard techniques."""
+        # Upscale
+        image = cv2.resize(
+            image,
+            None,
+            fx=DEFAULT_UPSCALE_FACTOR,
+            fy=DEFAULT_UPSCALE_FACTOR,
+            interpolation=cv2.INTER_CUBIC,
+        )
+        # Grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # Denoise
+        denoised = cv2.fastNlMeansDenoising(
+            gray,
+            None,
+            DEFAULT_DENOISE_STRENGTH,
+            DEFAULT_DENOISE_TEMPLATE_WINDOW,
+            DEFAULT_DENOISE_SEARCH_WINDOW,
+        )
+        # Otsu threshold
+        _, thresh = cv2.threshold(
+            denoised, 0, THRESHOLD_BINARY_MAX, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+        )
+        # Invert if background is dark
+        if np.mean(thresh) < INVERSION_THRESHOLD_MEAN:
+            thresh = cv2.bitwise_not(thresh)
+        return thresh
+
+    def tesseract_config(self) -> str:
+        """Returns the default Tesseract configuration."""
+        return TESSERACT_CONFIG_DEFAULT
+
+
+class RevomonTextStrategy(ExtractStrategy):
     """Strategy for Revomon UI images.
 
     Attributes:
@@ -90,9 +150,9 @@ class RevomonTextStrategy(DefaultExtractStrategy):
             denoised = cv2.fastNlMeansDenoising(
                 gray,
                 None,
-                super().denoise_strength,
-                7,
-                21,
+                DEFAULT_DENOISE_STRENGTH,
+                DEFAULT_DENOISE_TEMPLATE_WINDOW,
+                DEFAULT_DENOISE_SEARCH_WINDOW,
             )
             _, thresh = cv2.threshold(
                 denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
