@@ -1,11 +1,11 @@
 """Main controller for the Pymordial automation framework."""
 
 import logging
-import cv2
 from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
+import cv2
 import numpy as np
 from PIL import Image
 from pymordial.core.blueprints.emulator_device import EmulatorState
@@ -16,11 +16,11 @@ from pymordial.ui.element import PymordialElement
 from pymordial.ui.image import PymordialImage
 from pymordial.ui.pixel import PymordialPixel
 from pymordial.ui.text import PymordialText
-
 from pymordialdroid.android_app import AndroidApp
 from pymordialdroid.devices.adb_device import AdbDevice
 from pymordialdroid.devices.tesseract_device import TesseractDevice
 from pymordialdroid.devices.ui_device import AndroidUiDevice
+
 from pymordialblue.devices.bluestacks_device import PymordialBluestacksDevice
 from pymordialblue.utils.configs import get_config
 

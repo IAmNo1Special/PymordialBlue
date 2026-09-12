@@ -13,8 +13,8 @@ from pymordial.core.blueprints.emulator_device import (
 )
 from pymordial.core.blueprints.vision_device import PymordialVisionDevice
 from pymordial.utils import log_property_setter, validate_and_convert_int
-
 from pymordialdroid.devices.adb_device import AdbDevice
+
 from pymordialblue.utils.configs import (
     BluestacksConfig,
     PymordialBlueConfig,

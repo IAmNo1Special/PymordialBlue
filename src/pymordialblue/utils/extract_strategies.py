@@ -6,9 +6,9 @@ import re
 import cv2
 import numpy as np
 from pymordial.core.blueprints.extract_strategy import PymordialExtractStrategy
+from pymordialdroid.utils.extract_strategies import DefaultExtractStrategy
 
 from pymordialblue.utils.configs import get_config
-from pymordialdroid.utils.extract_strategies import DefaultExtractStrategy
 
 _CONFIG = get_config()
 

@@ -2,7 +2,6 @@
 
 from pymordial.core.state_machine import AppState
 from pymordial.ui.element import PymordialElement
-
 from pymordialdroid.android_app import AndroidApp
 
 

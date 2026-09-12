@@ -3,8 +3,8 @@
 from unittest.mock import MagicMock, patch
 
 from pymordial.core.blueprints.emulator_device import EmulatorState
-
 from pymordialdroid.android_app import AndroidApp
+
 from pymordialblue.bluestacks_controller import PymordialBluestacksController
 
 
