@@ -195,9 +195,9 @@ def mock_psutil():
 
 @pytest.fixture(autouse=True)
 def patch_bluestacks_filepath():
-    """Globally patch PymordialBluestacksDevice._autoset_filepath to prevent drive scans."""
+    """Globally patch BluestacksDevice._autoset_filepath to prevent drive scans."""
     with patch(
-        "pymordialblue.devices.bluestacks_device.PymordialBluestacksDevice._autoset_filepath",
+        "pymordialblue.devices.bluestacks_device.BluestacksDevice._autoset_filepath",
         side_effect=lambda self: setattr(self, "_filepath", "C:\\Mock\\HD-Player.exe"),
         autospec=True,
     ):
@@ -206,10 +206,10 @@ def patch_bluestacks_filepath():
 
 @pytest.fixture
 def mock_controller(mock_adb_device, mock_config):
-    """Provides a mocked PymordialBluestacksController."""
+    """Provides a mocked BluestacksController."""
     with patch("pymordialblue.utils.configs.get_config", return_value=mock_config):
-        from pymordialblue.bluestacks_controller import PymordialBluestacksController
+        from pymordialblue.bluestacks_controller import BluestacksController
 
-        controller = PymordialBluestacksController()
+        controller = BluestacksController()
         controller.bluestacks.state.current_state = EmulatorState.READY
         yield controller

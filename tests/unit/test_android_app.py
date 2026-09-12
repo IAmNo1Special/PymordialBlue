@@ -2,7 +2,8 @@
 
 from pymordial.core.state_machine import AppState
 from pymordial.ui.element import PymordialElement
-from pymordialdroid.android_app import AndroidApp
+
+from pymordialblue.android_app import AndroidApp
 
 
 def test_android_app_init():
@@ -19,9 +20,11 @@ def test_android_app_check_ready(mock_controller):
         app_name="TestApp", package_name="com.test.app", ready_element=ready_element
     )
 
+    # Setup state and controller
     app.pymordial_controller = mock_controller
     app.app_state.transition_to(AppState.LOADING)
 
+    # Mock controller's element detection
     mock_controller.is_element_visible = lambda el, **kwargs: True
 
     assert app.check_ready() is True
