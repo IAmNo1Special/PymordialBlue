@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from pymordial.core.blueprints.emulator_device import EmulatorState
 
-from pymordialblue.android_app import PymordialAndroidApp
+from pymordialdroid.android_app import AndroidApp
 from pymordialblue.bluestacks_controller import PymordialBluestacksController
 
 
@@ -19,7 +19,7 @@ def test_controller_init(mock_config):
 
 def test_controller_open_app(mock_controller, mock_config):
     """Test open_app delegation."""
-    app = PymordialAndroidApp(app_name="TestApp", package_name="com.test.app")
+    app = AndroidApp(app_name="TestApp", package_name="com.test.app")
     mock_controller.adb.open_app = MagicMock(return_value=True)
 
     assert mock_controller.open_app(app) is True
@@ -40,16 +40,14 @@ def test_controller_click_element(mock_controller):
     mock_controller.adb.is_connected = MagicMock(return_value=True)
     mock_controller.adb.run_command = MagicMock()
 
-    # Mock find_element behavior
     with patch.object(mock_controller, "find_element", return_value=(100, 200)):
         assert mock_controller.click_element(element) is True
-        # click_element calls click_coord which calls adb.run_command(tap_command)
         assert mock_controller.adb.run_command.called
 
 
 def test_controller_capture_screen(mock_controller):
     """Test capture_screen delegation."""
-    mock_controller.adb.capture_screen = MagicMock(return_value=b"fake_bytes")
+    mock_controller.adb.capture_screenshot = MagicMock(return_value=b"fake_bytes")
     assert mock_controller.capture_screen() == b"fake_bytes"
 
 
