@@ -14,7 +14,7 @@ from pymordial.core.blueprints.emulator_device import (
 from pymordial.core.blueprints.vision_device import PymordialVisionDevice
 from pymordial.utils import log_property_setter, validate_and_convert_int
 
-from pymordialblue.devices.adb_device import PymordialAdbDevice
+from pymordialdroid.devices.adb_device import AdbDevice
 from pymordialblue.utils.configs import (
     BluestacksConfig,
     PymordialBlueConfig,
@@ -38,14 +38,14 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
 
     def __init__(
         self,
-        adb_bridge_device: PymordialAdbDevice | None = None,
+        adb_bridge_device: AdbDevice | None = None,
         vision_device: PymordialVisionDevice | None = None,
         config: BluestacksConfig | None = None,
     ) -> None:
         """Initializes the PymordialBluestacksDevice.
 
         Args:
-            adb_bridge_device: The bridge device (e.g. PymordialAdbDevice) used for
+            adb_bridge_device: The bridge device (e.g. AdbDevice) used for
                 low-level ADB interactions.
             vision_device: The vision device used for screen analysis.
             config: A TypedDict containing BlueStacks configuration options.
@@ -60,7 +60,7 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
         self.config = copy.deepcopy(config or get_config()["bluestacks"])
         self.running_apps: list[PymordialApp] | list = list()
 
-        self._adb_bridge_device: PymordialAdbDevice | None = adb_bridge_device
+        self._adb_bridge_device: AdbDevice | None = adb_bridge_device
         self._vision_device: PymordialVisionDevice | None = vision_device
         self._ref_window_size: tuple[int, int] = tuple(
             self.config["default_resolution"]
@@ -97,7 +97,7 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
 
     def set_dependencies(
         self,
-        adb_bridge_device: PymordialAdbDevice,
+        adb_bridge_device: AdbDevice,
         vision_device: PymordialVisionDevice,
     ) -> None:
         """Sets external dependencies (dependency injection).
@@ -300,7 +300,8 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
         # activity: .SettingsActivity
         self.logger.info("Opening Settings...")
         return self._adb_bridge_device.open_app(
-            "settings", package_name="com.bluestacks.settings"
+            package_name="com.bluestacks.settings",
+            app_name="settings",
         )
 
     def wait_for_load(self, timeout_s: int | None = None) -> None:
@@ -504,11 +505,11 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
 
 
 if __name__ == "__main__":
-    from pymordialblue.devices.adb_device import PymordialAdbDevice
-    from pymordialblue.devices.ui_device import PymordialUiDevice
+    from pymordialdroid.devices.adb_device import AdbDevice
+    from pymordialdroid.devices.ui_device import AndroidUiDevice
 
-    adb_bridge_device = PymordialAdbDevice(host="127.0.0.1", port=5555)
-    vision_device = PymordialUiDevice(bridge_device=adb_bridge_device)
+    adb_bridge_device = AdbDevice(host="127.0.0.1", port=5555)
+    vision_device = AndroidUiDevice(bridge_device=adb_bridge_device)
     device = PymordialBluestacksDevice(
         adb_bridge_device=adb_bridge_device, vision_device=vision_device
     )
