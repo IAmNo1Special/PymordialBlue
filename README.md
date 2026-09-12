@@ -25,12 +25,7 @@ PymordialBlue is a powerful extension of the [Pymordial](https://github.com/IAmN
 PymordialBlue is managed with `uv`.
 
 ```bash
-# Clone the repository
-git clone https://github.com/IAmNo1Special/PymordialBlue.git
-cd PymordialBlue
-
-# Sync dependencies (including local Pymordial)
-uv sync
+uv add pymordialblue
 ```
 
 ---
