@@ -14,8 +14,8 @@ from pymordial.core.screen import PymordialScreen
 from pymordial.ui.image import PymordialImage
 from pymordial.ui.text import PymordialText
 
-from pymordialdroid.android_app import AndroidApp
-from pymordialblue.bluestacks_controller import PymordialBluestacksController
+from pymordialblue.android_app import AndroidApp
+from pymordialblue.bluestacks_controller import BluestacksController
 
 logger = getLogger(__name__)
 
@@ -26,8 +26,8 @@ def main():
     logger.info("=== Pymordial Custom App Structure Example ===\n")
 
     # Create controller
-    logger.info("1. Creating PymordialController...")
-    controller = PymordialBluestacksController()
+    logger.info("1. Creating BluestacksController...")
+    controller = BluestacksController()
     logger.info("   ✓ Controller created\n")
 
     # Define your custom app

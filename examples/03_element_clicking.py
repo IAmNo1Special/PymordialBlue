@@ -15,8 +15,8 @@ from pymordial.ui.image import PymordialImage
 from pymordial.ui.pixel import PymordialPixel
 from pymordial.ui.text import PymordialText
 
-from pymordialdroid.android_app import AndroidApp
-from pymordialblue.bluestacks_controller import PymordialBluestacksController
+from pymordialblue.android_app import AndroidApp
+from pymordialblue.bluestacks_controller import BluestacksController
 
 logger = getLogger(__name__)
 
@@ -29,8 +29,8 @@ def main():
     try:
         # Create controller
         # Create controller
-        logger.info("1. Creating PymordialController...")
-        controller = PymordialBluestacksController()
+        logger.info("1. Creating BluestacksController...")
+        controller = BluestacksController()
 
         if not controller.bluestacks.is_ready():
             logger.info("   Opening BlueStacks...")
