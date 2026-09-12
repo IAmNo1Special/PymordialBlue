@@ -23,7 +23,7 @@ A unified controller (`PymordialBluestacksController`) that acts as a single poi
 - **OCR**: Integrated Tesseract support with custom extraction strategies for difficult game fonts.
 
 ### 📦 Robust Application Model
-Structure your automation code using the `PymordialAndroidApp` class. Define your apps, their package names, and their "Ready" states (e.g., waiting for a specific logo) to ensure your scripts never flake on startup.
+Structure your automation code using the `AndroidApp` class. Define your apps, their package names, and their "Ready" states (e.g., waiting for a specific logo) to ensure your scripts never flake on startup.
 
 ## 🔧 Installation
 

@@ -17,7 +17,7 @@ PymordialBlue doesn't just talk to Android; it talks to **BlueStacks**. It manag
 *   Gracefully shut down the emulator.
 
 ### 👁️ Unified Vision System
-Forget coordinating multiple libraries. The `PymordialUiDevice` unifies:
+Forget coordinating multiple libraries. The `AndroidUiDevice` unifies:
 *   **Template Matching**: Find buttons and icons with multi-scale support.
 *   **Pixel Checks**: Ultra-fast color verification for status bars/indicators.
 *   **OCR**: Integrated Tesseract support for reading dynamic text.

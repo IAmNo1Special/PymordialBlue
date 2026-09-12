@@ -10,8 +10,13 @@ This script demonstrates how to:
 import time
 from logging import INFO, basicConfig, getLogger
 
+<<<<<<< HEAD
 from pymordialblue.android_app import AndroidApp
 from pymordialblue.bluestacks_controller import BluestacksController
+=======
+from pymordialdroid.android_app import AndroidApp
+from pymordialblue.bluestacks_controller import PymordialBluestacksController
+>>>>>>> 6d2e8d294266d5c2f7931cc6e98f9918e60549b1
 
 logger = getLogger(__name__)
 

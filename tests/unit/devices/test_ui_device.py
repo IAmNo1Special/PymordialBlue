@@ -1,4 +1,4 @@
-"""Tests for UiDevice."""
+"""Tests for AndroidUiDevice."""
 
 from unittest.mock import patch
 
@@ -6,18 +6,18 @@ import numpy as np
 from PIL import Image
 from pymordial.ui.pixel import PymordialPixel
 
-from pymordialblue.devices.ui_device import UiDevice
+from pymordialblue.devices import AndroidUiDevice
 
 
 def test_ui_device_init(mock_config):
-    """Test initialization of UiDevice."""
-    device = UiDevice()
+    """Test initialization of AndroidUiDevice."""
+    device = AndroidUiDevice()
     assert device is not None
 
 
 def test_ui_device_check_pixel_color(mock_cv2):
     """Test pixel color matching."""
-    device = UiDevice()
+    device = AndroidUiDevice()
     # Set og_resolution to (100, 100) to match the mock image size and avoid scaling issues
     pixel = PymordialPixel(
         label="test_pixel",
@@ -36,7 +36,7 @@ def test_ui_device_check_pixel_color(mock_cv2):
 
 def test_ui_device_where_element(mock_cv2):
     """Test element finding via template matching."""
-    device = UiDevice()
+    device = AndroidUiDevice()
     from pymordial.ui.image import PymordialImage
 
     # Create a real small PIL image instead of a MagicMock to avoid __array_interface__ errors
@@ -65,7 +65,7 @@ def test_ui_device_where_element(mock_cv2):
 
 def test_ui_device_read_text(mock_pytesseract, mock_cv2):
     """Test OCR text reading."""
-    device = UiDevice()
+    device = AndroidUiDevice()
     text = device.read_text(
         pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
     )
@@ -75,7 +75,7 @@ def test_ui_device_read_text(mock_pytesseract, mock_cv2):
 
 def test_ui_device_find_text(mock_pytesseract, mock_cv2):
     """Test finding text coordinates."""
-    device = UiDevice()
+    device = AndroidUiDevice()
 
     # Center of (50, 60, 20, 10) is (60, 65)
     coords = device.find_text(

@@ -1,6 +1,6 @@
 """Tests for AdbDevice."""
 
-from pymordialblue.devices.adb_device import AdbDevice
+from pymordialblue.devices import AdbDevice
 
 
 def test_adb_device_init(mock_config):

@@ -5,6 +5,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
+import cv2
 import numpy as np
 from PIL import Image
 from pymordial.core.blueprints.emulator_device import EmulatorState
@@ -15,11 +16,13 @@ from pymordial.ui.element import PymordialElement
 from pymordial.ui.image import PymordialImage
 from pymordial.ui.pixel import PymordialPixel
 from pymordial.ui.text import PymordialText
+from pymordialdroid.android_app import AndroidApp
+from pymordialdroid.devices.adb_device import AdbDevice
+from pymordialdroid.devices.tesseract_device import TesseractDevice
+from pymordialdroid.devices.ui_device import AndroidUiDevice
 
 from pymordialblue.android_app import AndroidApp
-from pymordialblue.devices.adb_device import AdbDevice
 from pymordialblue.devices.bluestacks_device import BluestacksDevice
-from pymordialblue.devices.ui_device import UiDevice
 from pymordialblue.utils.configs import get_config
 
 if TYPE_CHECKING:
@@ -39,7 +42,7 @@ class BluestacksController(PymordialController):
 
     Attributes:
         adb: The AdbDevice instance.
-        ui: The UiDevice instance.
+        ui: The AndroidUiDevice instance.
         bluestacks: The BluestacksDevice instance.
     """
 
@@ -54,7 +57,7 @@ class BluestacksController(PymordialController):
         adb_port: int | None = None,
         apps: list["AndroidApp"] | None = None,
     ):
-        """Initializes the PymordialController.
+        """Initializes the BluestacksController.
 
         Args:
             adb_host: Optional ADB host address.
@@ -75,10 +78,17 @@ class BluestacksController(PymordialController):
         def configure_ui(plugin: "PymordialPlugin") -> None:
             if hasattr(plugin, "set_bridge_device"):
                 plugin.set_bridge_device(self.adb)
+            if hasattr(plugin, "set_ocr_device"):
+                plugin.set_ocr_device(
+                    self._resolve_plugin(
+                        "ocr",
+                        lambda: TesseractDevice(),
+                    )
+                )
 
         self.ui = self._resolve_plugin(
             "ui",
-            lambda: UiDevice(bridge_device=self.adb),
+            lambda: AndroidUiDevice(bridge_device=self.adb),
             configure_found_plugin=configure_ui,
         )
 
@@ -93,7 +103,7 @@ class BluestacksController(PymordialController):
             configure_found_plugin=configure_bluestacks,
         )
 
-        self._streaming_enabled = False  # Track if streaming should be active
+        self._streaming_enabled = False
 
         if apps:
             for app in apps:
@@ -141,7 +151,7 @@ class BluestacksController(PymordialController):
         """Opens an app on the device.
 
         Args:
-            app_name: The display name of the app or a AndroidApp instance.
+            app_name: The display name of the app or an AndroidApp instance.
             package_name: The Android package name.
             timeout: Maximum seconds to wait for launch.
             wait_time: Seconds to wait after launch command.
@@ -155,13 +165,12 @@ class BluestacksController(PymordialController):
                 package_name = app_name.package_name
             app_name = app_name.app_name
 
-        # Resolve defaults from config if not provided
         timeout = timeout or _CONFIG["adb"]["app_start_timeout"]
         wait_time = wait_time or _CONFIG["adb"]["default_wait_time"]
 
         return self.adb.open_app(
+            package_name=package_name or "",
             app_name=app_name,
-            package_name=package_name,
             timeout=float(timeout),
             wait_time=float(wait_time),
         )
@@ -176,7 +185,7 @@ class BluestacksController(PymordialController):
         """Closes an app on the device.
 
         Args:
-            app_name: The display name of the app or a AndroidApp instance.
+            app_name: The display name of the app or an AndroidApp instance.
             package_name: The Android package name.
             timeout: Maximum seconds to wait for closure.
             wait_time: Seconds to wait after close command.
@@ -207,14 +216,14 @@ class BluestacksController(PymordialController):
 
         Convenience method that delegates to adb.capture_screenshot().
         """
-        return self.adb.capture_screen()
+        return self.adb.capture_screenshot()
 
     def disconnect(self) -> None:
         """Closes the ADB connection and performs cleanup."""
         if self.adb.is_connected():
             self.adb.disconnect()
 
-    ## --- Click Methods ---
+    # --- Click Methods ---
     def click_coord(
         self, coords: tuple[int, int], times: int = CLICK_COORD_TIMES
     ) -> bool:
@@ -227,7 +236,6 @@ class BluestacksController(PymordialController):
         Returns:
             True if the click was sent successfully, False otherwise.
         """
-        # Ensure Bluestacks is ready before trying to click coords
         match self.bluestacks.state.current_state:
             case EmulatorState.CLOSED | EmulatorState.LOADING:
                 logger.warning("Cannot click coords - Bluestacks is not ready")
@@ -266,7 +274,6 @@ class BluestacksController(PymordialController):
         Returns:
             True if the element was found and clicked, False otherwise.
         """
-        # Ensure Bluestacks is ready before trying to click ui
         match self.bluestacks.state.current_state:
             case EmulatorState.CLOSED | EmulatorState.LOADING:
                 logger.warning("Cannot click coords - Bluestacks is not ready")
@@ -348,7 +355,7 @@ class BluestacksController(PymordialController):
 
         Convenience method that delegates to adb.tap().
         """
-        return self.adb.tap(x, y)
+        return self.adb.tap((x, y))
 
     def swipe(
         self, start_x: int, start_y: int, end_x: int, end_y: int, duration: int = 300
@@ -384,8 +391,8 @@ class BluestacksController(PymordialController):
         """
         if isinstance(pymordial_element, PymordialImage):
             return self.ui.where_element(
-                pymordial_element=pymordial_element,
-                pymordial_screenshot=pymordial_screenshot,
+                element=pymordial_element,
+                screenshot=pymordial_screenshot,
                 max_tries=max_tries,
             )
         elif isinstance(pymordial_element, PymordialText):
@@ -395,7 +402,6 @@ class BluestacksController(PymordialController):
                 strategy=pymordial_element.extract_strategy,
             )
         elif isinstance(pymordial_element, PymordialPixel):
-            # Capture screenshot if not provided (avoid 'or' with numpy arrays)
             pixel_screenshot = (
                 pymordial_screenshot
                 if pymordial_screenshot is not None
@@ -442,11 +448,6 @@ class BluestacksController(PymordialController):
                 is not None
             )
         elif isinstance(pymordial_element, PymordialText):
-            # For text, we use the text controller to check existence
-            # Note: This doesn't return coordinates yet, so click_element won't work for Text
-            # unless find_element is implemented for Text.
-
-            # If the element has a defined region, crop the image to that region
             if pymordial_element.region and pymordial_screenshot is not None:
                 try:
                     if isinstance(pymordial_screenshot, bytes):
@@ -457,7 +458,6 @@ class BluestacksController(PymordialController):
                         pymordial_screenshot = None
 
                     if pymordial_screenshot is not None:
-                        # region is (left, top, right, bottom)
                         pymordial_screenshot = pymordial_screenshot.crop(
                             pymordial_element.region
                         )
@@ -612,10 +612,9 @@ class BluestacksController(PymordialController):
 
         Convenience method that delegates to adb.start_stream().
         """
-        result = self.adb.start_stream()
-        if result:
-            self._streaming_enabled = True
-        return result
+        self.adb.start_stream()
+        self._streaming_enabled = True
+        return True
 
     def get_frame(self) -> "np.ndarray | None":
         """Get the latest frame from the active stream.
@@ -631,7 +630,14 @@ class BluestacksController(PymordialController):
             ...     # Process frame (OCR, template matching, etc.)
             ...     text = controller.read_text(frame)
         """
-        return self.adb.get_latest_frame()
+        frame_bytes = self.adb.get_latest_frame()
+        if frame_bytes is None:
+            return None
+        nparr = np.frombuffer(frame_bytes, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        if frame is not None:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        return frame
 
     def stop_streaming(self) -> None:
         """Stop the active video stream and disable auto-restart.
@@ -639,12 +645,12 @@ class BluestacksController(PymordialController):
         Convenience method that delegates to adb.stop_stream().
         """
         self._streaming_enabled = False
-        return self.adb.stop_stream()
+        self.adb.stop_stream()
 
     def __repr__(self) -> str:
-        """Returns a string representation of the PymordialController."""
+        """Returns a string representation of the BluestacksController."""
         return (
-            f"PymordialController("
+            f"BluestacksController("
             f"apps={len(self._apps)}, "
             f"adb_connected={self.adb.is_connected()}, "
             f"bluestacks={self.bluestacks.state.current_state.name})"

@@ -46,8 +46,8 @@ uv run examples/01_basic_connection.py
 
 **Expected Output:**
 ```text
-INFO:PymordialAdbDevice:Connecting to ADB at 127.0.0.1:5555...
-INFO:PymordialAdbDevice:PymordialAdbDevice device connected.
+INFO:pymordialdroid:Connecting to ADB at 127.0.0.1:5555...
+INFO:pymordialdroid:Connected to device 127.0.0.1:5555
 INFO:root:Connected to BlueStacks!
 INFO:root:BlueStacks is READY.
 ```

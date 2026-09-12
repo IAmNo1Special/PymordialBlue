@@ -14,8 +14,13 @@ from pymordial.core.screen import PymordialScreen
 from pymordial.ui.image import PymordialImage
 from pymordial.ui.text import PymordialText
 
+<<<<<<< HEAD
 from pymordialblue.android_app import AndroidApp
 from pymordialblue.bluestacks_controller import BluestacksController
+=======
+from pymordialdroid.android_app import AndroidApp
+from pymordialblue.bluestacks_controller import PymordialBluestacksController
+>>>>>>> 6d2e8d294266d5c2f7931cc6e98f9918e60549b1
 
 logger = getLogger(__name__)
 
