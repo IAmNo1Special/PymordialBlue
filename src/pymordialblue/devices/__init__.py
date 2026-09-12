@@ -5,6 +5,7 @@ device implementations.
 """
 
 from pymordialdroid.devices import AdbDevice, AndroidUiDevice, TesseractDevice
+
 from .bluestacks_device import BluestacksDevice
 
 __all__ = [

@@ -37,7 +37,9 @@ def main() -> None:
 
     try:
         controller = BluestacksController()
-        logging.info("PymordialBlue controller initialized successfully.")
+        logging.info(
+            "PymordialBlue controller initialized successfully: %s", controller
+        )
     except KeyboardInterrupt:
         print("\nGoodbye.")
         sys.exit(0)

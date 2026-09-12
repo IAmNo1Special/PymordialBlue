@@ -41,9 +41,10 @@ dev = [
 pymordialblue = "pymordialblue:main"
 
 [project.entry-points."pymordial.plugins"]
-adb = "pymordialdroid.devices.adb_device:AdbDevice"
-ui = "pymordialdroid.devices.ui_device:AndroidUiDevice"
 bluestacks = "pymordialblue.devices.bluestacks_device:BluestacksDevice"
+
+[tool.uv.sources]
+pymordialdroid = { path = "../PymordialDroid", editable = true }
 
 [tool.isort]
 profile = "black"

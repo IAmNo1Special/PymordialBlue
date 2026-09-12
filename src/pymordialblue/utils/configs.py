@@ -208,12 +208,12 @@ def _load_config() -> BlueConfig:
     if not _DEFAULT_CONFIG_PATH.exists():
         raise FileNotFoundError(f"Package config not found: {_DEFAULT_CONFIG_PATH}")
 
-    with open(_DEFAULT_CONFIG_PATH, "r", encoding="utf-8") as f:
+    with open(_DEFAULT_CONFIG_PATH, encoding="utf-8") as f:
         config = yaml.safe_load(f) or {}
 
     # Merge user overrides if present
     if _USER_CONFIG_PATH.exists():
-        with open(_USER_CONFIG_PATH, "r", encoding="utf-8") as f:
+        with open(_USER_CONFIG_PATH, encoding="utf-8") as f:
             user_config = yaml.safe_load(f) or {}
             _deep_merge(config, user_config)
 

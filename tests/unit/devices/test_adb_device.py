@@ -27,13 +27,7 @@ def test_adb_device_run_command(mock_adb_device):
 
     result = device.run_command("echo hello", decode=True)
     assert result == "output"
-    mock_adb_device.shell.assert_called_with(
-        "echo hello",
-        timeout_s=30,
-        read_timeout_s=30,
-        transport_timeout_s=30,
-        decode=True,
-    )
+    mock_adb_device.shell.assert_called_with("echo hello", decode=True)
 
 
 def test_adb_device_get_focused_app(mock_adb_device):
@@ -66,10 +60,4 @@ def test_adb_device_tap(mock_adb_device):
     device = AdbDevice(host="127.0.0.1", port=5555)
     device._device = mock_adb_device
     device.tap(100, 200)
-    mock_adb_device.shell.assert_called_with(
-        "input tap 100 200",
-        timeout_s=30,
-        read_timeout_s=30,
-        transport_timeout_s=30,
-        decode=False,
-    )
+    mock_adb_device.shell.assert_called_with("input tap 100 200", decode=True)

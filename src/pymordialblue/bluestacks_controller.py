@@ -1,15 +1,16 @@
 """Main controller for the Pymordial automation framework."""
 
 import logging
+from collections.abc import Callable
 from io import BytesIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import cv2
 import numpy as np
 from PIL import Image
 from pymordial.core.blueprints.emulator_device import EmulatorState
-from pymordial.core.blueprints.extract_strategy import ExtractStrategy
+from pymordial.core.blueprints.extract_strategy import PymordialExtractStrategy
 from pymordial.core.controller import PymordialController
 from pymordial.core.registry import PluginRegistry
 from pymordial.ui.element import PymordialElement
@@ -21,7 +22,6 @@ from pymordialdroid.devices.adb_device import AdbDevice
 from pymordialdroid.devices.tesseract_device import TesseractDevice
 from pymordialdroid.devices.ui_device import AndroidUiDevice
 
-from pymordialblue.android_app import AndroidApp
 from pymordialblue.devices.bluestacks_device import BluestacksDevice
 from pymordialblue.utils.configs import get_config
 
@@ -69,35 +69,37 @@ class BluestacksController(PymordialController):
         self.registry.load_from_entry_points()
 
         # 1. Resolve ADB
-        self.adb = self._resolve_plugin(
+        self.adb: AdbDevice = self._resolve_plugin(
             "adb",
             lambda: AdbDevice(host=adb_host, port=adb_port),
         )
+        self.bridge: AdbDevice = self.adb
 
-        # 2. Resolve UI
+        # 2. Resolve OCR
+        self.ocr: TesseractDevice = self._resolve_plugin(
+            "ocr",
+            lambda: TesseractDevice(),
+        )
+
+        # 3. Resolve UI
         def configure_ui(plugin: "PymordialPlugin") -> None:
             if hasattr(plugin, "set_bridge_device"):
                 plugin.set_bridge_device(self.adb)
             if hasattr(plugin, "set_ocr_device"):
-                plugin.set_ocr_device(
-                    self._resolve_plugin(
-                        "ocr",
-                        lambda: TesseractDevice(),
-                    )
-                )
+                plugin.set_ocr_device(self.ocr)
 
-        self.ui = self._resolve_plugin(
+        self.ui: AndroidUiDevice = self._resolve_plugin(
             "ui",
-            lambda: AndroidUiDevice(bridge_device=self.adb),
+            lambda: AndroidUiDevice(bridge_device=self.adb, ocr_device=self.ocr),
             configure_found_plugin=configure_ui,
         )
 
-        # 3. Resolve BlueStacks
+        # 4. Resolve BlueStacks
         def configure_bluestacks(plugin: "PymordialPlugin") -> None:
             if hasattr(plugin, "set_dependencies"):
                 plugin.set_dependencies(self.adb, self.ui)
 
-        self.bluestacks = self._resolve_plugin(
+        self.bluestacks: BluestacksDevice = self._resolve_plugin(
             "bluestacks",
             lambda: BluestacksDevice(self.adb, self.ui),
             configure_found_plugin=configure_bluestacks,
@@ -213,9 +215,9 @@ class BluestacksController(PymordialController):
 
         Returns:
             Screenshot as bytes, or None if failed.
-
-        Convenience method that delegates to adb.capture_screenshot().
         """
+        if hasattr(self.adb, "capture_screen"):
+            return self.adb.capture_screen()
         return self.adb.capture_screenshot()
 
     def disconnect(self) -> None:
@@ -543,7 +545,7 @@ class BluestacksController(PymordialController):
         self,
         image_path: "Path | bytes | str",
         case_sensitive: bool = False,
-        strategy: "ExtractStrategy | None" = None,
+        strategy: "PymordialExtractStrategy | None" = None,
     ) -> list[str]:
         """Read text from an image using OCR.
 
@@ -563,7 +565,7 @@ class BluestacksController(PymordialController):
         text_to_find: str,
         image_path: "Path | bytes | str",
         case_sensitive: bool = False,
-        strategy: "ExtractStrategy | None" = None,
+        strategy: "PymordialExtractStrategy | None" = None,
     ) -> bool:
         """Check if specific text exists in an image.
 

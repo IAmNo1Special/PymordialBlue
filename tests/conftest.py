@@ -140,7 +140,6 @@ def mock_cv2():
         patch("cv2.matchTemplate") as mock_match,
         patch("cv2.imdecode") as mock_imdecode,
     ):
-
         mock_imread.return_value = np.zeros((100, 100, 3), dtype=np.uint8)
         mock_imdecode.return_value = np.zeros((100, 100, 3), dtype=np.uint8)
         mock_cvt.return_value = np.zeros((100, 100, 3), dtype=np.uint8)

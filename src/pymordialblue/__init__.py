@@ -1,10 +1,18 @@
 """PymordialBlue: Advanced Automation for BlueStacks using Pymordial."""
 
-from pymordialblue.devices import AdbDevice, AndroidUiDevice, BluestacksDevice, TesseractDevice
 from pymordialblue.android_app import AndroidApp
 from pymordialblue.bluestacks_controller import BluestacksController
+from pymordialblue.devices import (
+    AdbDevice,
+    AndroidUiDevice,
+    BluestacksDevice,
+    TesseractDevice,
+)
 from pymordialblue.utils.configs import BlueConfig, get_config
-from pymordialblue.utils.extract_strategies import DefaultExtractStrategy, ExtractStrategy, RevomonTextStrategy
+from pymordialblue.utils.extract_strategies import (
+    DefaultExtractStrategy,
+    RevomonTextStrategy,
+)
 
 __all__ = [
     "AdbDevice",
@@ -14,7 +22,6 @@ __all__ = [
     "BluestacksDevice",
     "BlueConfig",
     "DefaultExtractStrategy",
-    "ExtractStrategy",
     "RevomonTextStrategy",
     "TesseractDevice",
     "get_config",

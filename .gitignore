@@ -6,8 +6,9 @@ dist/
 wheels/
 *.egg-info
 
-# pytest cache
+# pytest and ruff cache
 .pytest_cache
+.ruff_cache
 
 # Virtual environments
 .venv
@@ -17,4 +18,6 @@ wheels/
 
 # Agent
 .agent
+.agents
+.kilo
 
