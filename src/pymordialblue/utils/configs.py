@@ -155,7 +155,7 @@ class ControllerConfig(TypedDict):
     click_coord_times: int
 
 
-class PymordialBlueConfig(TypedDict):
+class BlueConfig(TypedDict):
     adb: AdbConfig
     bluestacks: BluestacksConfig
     ui: VisionConfig
@@ -192,7 +192,7 @@ def _validate_config(config: dict) -> None:
         raise ValueError("Missing required config section: bluestacks.ui.assets")
 
 
-def _load_config() -> PymordialBlueConfig:
+def _load_config() -> BlueConfig:
     """Loads config from package defaults and optional user overrides.
 
     Returns:
@@ -236,7 +236,7 @@ def _deep_merge(base: dict, override: dict) -> None:
             base[key] = value
 
 
-def get_config() -> PymordialBlueConfig:
+def get_config() -> BlueConfig:
     """Retrieves the configuration dictionary.
 
     Loads package defaults from src/pymordial/configs.yaml

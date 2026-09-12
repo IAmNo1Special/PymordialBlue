@@ -37,11 +37,22 @@ dev = [
     "pre-commit>=4.5.1",
 ]
 
+[project.scripts]
+pymordialblue = "pymordialblue:main"
+
 [project.entry-points."pymordial.plugins"]
 adb = "pymordialdroid.devices.adb_device:AdbDevice"
 ui = "pymordialdroid.devices.ui_device:AndroidUiDevice"
-bluestacks = "pymordialblue.devices.bluestacks_device:PymordialBluestacksDevice"
+bluestacks = "pymordialblue.devices.bluestacks_device:BluestacksDevice"
 
 [tool.isort]
 profile = "black"
 line_length = 88
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP"]
+ignore = ["E501"]
