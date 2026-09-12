@@ -15,8 +15,8 @@ from pymordial.ui.image import PymordialImage
 from pymordial.ui.pixel import PymordialPixel
 from pymordial.ui.text import PymordialText
 
-from pymordialblue.android_app import PymordialAndroidApp
-from pymordialblue.bluestacks_controller import PymordialBluestacksController
+from pymordialblue.android_app import AndroidApp
+from pymordialblue.bluestacks_controller import BluestacksController
 
 logger = getLogger(__name__)
 
@@ -29,8 +29,8 @@ def main():
     try:
         # Create controller
         # Create controller
-        logger.info("1. Creating PymordialController...")
-        controller = PymordialBluestacksController()
+        logger.info("1. Creating BluestacksController...")
+        controller = BluestacksController()
 
         if not controller.bluestacks.is_ready():
             logger.info("   Opening BlueStacks...")
@@ -75,7 +75,7 @@ def main():
     # The app will auto-transition to READY when store_button is visible
     play_earn_text = PymordialText(label="play_earn_ready", element_text="Play & Earn")
 
-    bluestacks_app = PymordialAndroidApp(
+    bluestacks_app = AndroidApp(
         app_name="BlueStacks",
         package_name="com.bluestacks.appmart",
         ready_element=play_earn_text,  # Auto-detects when app is ready!

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Callable
 import numpy as np
 from PIL import Image
 from pymordial.core.blueprints.emulator_device import EmulatorState
-from pymordial.core.blueprints.extract_strategy import PymordialExtractStrategy
+from pymordial.core.blueprints.extract_strategy import ExtractStrategy
 from pymordial.core.controller import PymordialController
 from pymordial.core.registry import PluginRegistry
 from pymordial.ui.element import PymordialElement
@@ -16,10 +16,10 @@ from pymordial.ui.image import PymordialImage
 from pymordial.ui.pixel import PymordialPixel
 from pymordial.ui.text import PymordialText
 
-from pymordialblue.android_app import PymordialAndroidApp
-from pymordialblue.devices.adb_device import PymordialAdbDevice
-from pymordialblue.devices.bluestacks_device import PymordialBluestacksDevice
-from pymordialblue.devices.ui_device import PymordialUiDevice
+from pymordialblue.android_app import AndroidApp
+from pymordialblue.devices.adb_device import AdbDevice
+from pymordialblue.devices.bluestacks_device import BluestacksDevice
+from pymordialblue.devices.ui_device import UiDevice
 from pymordialblue.utils.configs import get_config
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 _CONFIG = get_config()
 
 
-class PymordialBluestacksController(PymordialController):
+class BluestacksController(PymordialController):
     """Main controller that orchestrates device interaction via plugins.
 
     This controller manages the lifecycle of connected devices (ADB, UI, Emulator)
@@ -38,9 +38,9 @@ class PymordialBluestacksController(PymordialController):
 
 
     Attributes:
-        adb: The PymordialAdbDevice instance.
-        ui: The PymordialUiDevice instance.
-        bluestacks: The PymordialBluestacksDevice instance.
+        adb: The AdbDevice instance.
+        ui: The UiDevice instance.
+        bluestacks: The BluestacksDevice instance.
     """
 
     DEFAULT_CLICK_TIMES = _CONFIG["controller"]["default_click_times"]
@@ -52,14 +52,14 @@ class PymordialBluestacksController(PymordialController):
         self,
         adb_host: str | None = None,
         adb_port: int | None = None,
-        apps: list["PymordialAndroidApp"] | None = None,
+        apps: list["AndroidApp"] | None = None,
     ):
         """Initializes the PymordialController.
 
         Args:
             adb_host: Optional ADB host address.
             adb_port: Optional ADB port.
-            apps: Optional list of PymordialAndroidApp instances to register.
+            apps: Optional list of AndroidApp instances to register.
         """
         super().__init__(apps=apps)
         self.registry = PluginRegistry(config=_CONFIG)
@@ -68,7 +68,7 @@ class PymordialBluestacksController(PymordialController):
         # 1. Resolve ADB
         self.adb = self._resolve_plugin(
             "adb",
-            lambda: PymordialAdbDevice(host=adb_host, port=adb_port),
+            lambda: AdbDevice(host=adb_host, port=adb_port),
         )
 
         # 2. Resolve UI
@@ -78,7 +78,7 @@ class PymordialBluestacksController(PymordialController):
 
         self.ui = self._resolve_plugin(
             "ui",
-            lambda: PymordialUiDevice(bridge_device=self.adb),
+            lambda: UiDevice(bridge_device=self.adb),
             configure_found_plugin=configure_ui,
         )
 
@@ -89,7 +89,7 @@ class PymordialBluestacksController(PymordialController):
 
         self.bluestacks = self._resolve_plugin(
             "bluestacks",
-            lambda: PymordialBluestacksDevice(self.adb, self.ui),
+            lambda: BluestacksDevice(self.adb, self.ui),
             configure_found_plugin=configure_bluestacks,
         )
 
@@ -133,7 +133,7 @@ class PymordialBluestacksController(PymordialController):
     # --- App Lifecycle Methods (implement base ABC) ---
     def open_app(
         self,
-        app_name: str | PymordialAndroidApp,
+        app_name: str | AndroidApp,
         package_name: str | None = None,
         timeout: int | None = None,
         wait_time: int | None = None,
@@ -141,7 +141,7 @@ class PymordialBluestacksController(PymordialController):
         """Opens an app on the device.
 
         Args:
-            app_name: The display name of the app or a PymordialAndroidApp instance.
+            app_name: The display name of the app or a AndroidApp instance.
             package_name: The Android package name.
             timeout: Maximum seconds to wait for launch.
             wait_time: Seconds to wait after launch command.
@@ -149,8 +149,8 @@ class PymordialBluestacksController(PymordialController):
         Returns:
             True if the app launched successfully, False otherwise.
         """
-        if isinstance(app_name, PymordialAndroidApp):
-            # If a PymordialAndroidApp is passed, extract package_name if not provided
+        if isinstance(app_name, AndroidApp):
+            # If a AndroidApp is passed, extract package_name if not provided
             if package_name is None and hasattr(app_name, "package_name"):
                 package_name = app_name.package_name
             app_name = app_name.app_name
@@ -168,7 +168,7 @@ class PymordialBluestacksController(PymordialController):
 
     def close_app(
         self,
-        app_name: str | PymordialAndroidApp,
+        app_name: str | AndroidApp,
         package_name: str | None = None,
         timeout: int | None = None,
         wait_time: int | None = None,
@@ -176,7 +176,7 @@ class PymordialBluestacksController(PymordialController):
         """Closes an app on the device.
 
         Args:
-            app_name: The display name of the app or a PymordialAndroidApp instance.
+            app_name: The display name of the app or a AndroidApp instance.
             package_name: The Android package name.
             timeout: Maximum seconds to wait for closure.
             wait_time: Seconds to wait after close command.
@@ -184,7 +184,7 @@ class PymordialBluestacksController(PymordialController):
         Returns:
             True if the app closed successfully, False otherwise.
         """
-        if isinstance(app_name, PymordialAndroidApp):
+        if isinstance(app_name, AndroidApp):
             if package_name is None and hasattr(app_name, "package_name"):
                 package_name = app_name.package_name
             app_name = app_name.app_name
@@ -543,7 +543,7 @@ class PymordialBluestacksController(PymordialController):
         self,
         image_path: "Path | bytes | str",
         case_sensitive: bool = False,
-        strategy: "PymordialExtractStrategy | None" = None,
+        strategy: "ExtractStrategy | None" = None,
     ) -> list[str]:
         """Read text from an image using OCR.
 
@@ -563,7 +563,7 @@ class PymordialBluestacksController(PymordialController):
         text_to_find: str,
         image_path: "Path | bytes | str",
         case_sensitive: bool = False,
-        strategy: "PymordialExtractStrategy | None" = None,
+        strategy: "ExtractStrategy | None" = None,
     ) -> bool:
         """Check if specific text exists in an image.
 

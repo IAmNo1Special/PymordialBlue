@@ -7,7 +7,7 @@ from pymordial.core.state_machine import AppState
 from pymordial.ui.element import PymordialElement
 
 
-class PymordialAndroidApp(PymordialApp):
+class AndroidApp(PymordialApp):
     """Represents an Android application with lifecycle management.
 
     The PymordialController reference is automatically set when this app
@@ -123,7 +123,7 @@ class PymordialAndroidApp(PymordialApp):
     def __repr__(self) -> str:
         """Returns a string representation of the app."""
         return (
-            f"PymordialApp("
+            f"AndroidApp("
             f"app_name='{self.app_name}', "
             f"package_name='{self.package_name}', "
             f"state={self.app_state.current_state.name})"

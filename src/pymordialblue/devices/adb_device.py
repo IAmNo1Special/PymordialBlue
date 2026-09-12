@@ -22,10 +22,10 @@ from PIL import Image
 from pymordial.core.blueprints.bridge_device import PymordialBridgeDevice
 from pymordial.utils import PymordialStreamReader
 
-from pymordialblue.utils.configs import AdbConfig, PymordialBlueConfig, get_config
+from pymordialblue.utils.configs import AdbConfig, BlueConfig, get_config
 
 
-class PymordialAdbDevice(PymordialBridgeDevice):
+class AdbDevice(PymordialBridgeDevice):
     """Handles Android device communication using adb-shell.
 
     Configuration is loaded from default settings but can be overridden
@@ -53,7 +53,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         config: AdbConfig | None = None,
         adbshell_log_level: int = WARNING,
     ):
-        """Initalizes PymordialAdbDevice.
+        """Initalizes AdbDevice.
 
         Args:
             host: The address of the device; may be an IP address or a host name.
@@ -61,11 +61,11 @@ class PymordialAdbDevice(PymordialBridgeDevice):
             config: A TypedDict containing ADB configuration. Defaults to package defaults.
             adbshell_log_level: The log level for adb-shell (e.g. logging.WARNING).
         """
-        self.logger = getLogger("PymordialAdbDevice")
+        self.logger = getLogger("AdbDevice")
         basicConfig(
             level=DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
-        self.logger.debug("Initalizing PymordialAdbDevice...")
+        self.logger.debug("Initalizing AdbDevice...")
         self.config = copy.deepcopy(config or get_config()["adb"])
         self.host: str = host or self.config["default_host"]
         self.port: int = port or self.config["default_port"]
@@ -80,9 +80,9 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         self._stream_thread: threading.Thread | None = None
         self._latest_frame: np.ndarray | None = None
         self._is_streaming = threading.Event()
-        self.logger.debug("PymordialAdbDevice initalized.")
+        self.logger.debug("AdbDevice initalized.")
 
-    def initialize(self, config: "PymordialBlueConfig") -> None:
+    def initialize(self, config: "BlueConfig") -> None:
         """Initializes the ADB device plugin.
 
         Args:
@@ -159,51 +159,51 @@ class PymordialAdbDevice(PymordialBridgeDevice):
 
         if self._device is None:
             self.logger.debug(
-                "PymordialAdbDevice device not initialized. Attempting to initialize..."
+                "AdbDevice device not initialized. Attempting to initialize..."
             )
             self._device = self._create_adb_device()
 
         if self._device.available:
-            self.logger.debug("PymordialAdbDevice device already connected.")
+            self.logger.debug("AdbDevice device already connected.")
             return True
 
         self.logger.debug(
-            "PymordialAdbDevice device not connected. Attempting to connect..."
+            "AdbDevice device not connected. Attempting to connect..."
         )
         try:
             self._device.connect(rsa_keys=self._get_adb_signer())
-            self.logger.debug("PymordialAdbDevice device connection successful.")
+            self.logger.debug("AdbDevice device connection successful.")
             return True
         except Exception as e:
-            self.logger.warning(f"Error connecting to PymordialAdbDevice device: {e}")
+            self.logger.warning(f"Error connecting to AdbDevice device: {e}")
             self._device = None
             return False
 
     def is_connected(self) -> bool:
-        """Checks if PymordialAdbDevice device is connected.
+        """Checks if AdbDevice device is connected.
 
         Returns:
             True if the device is connected, False otherwise.
         """
-        self.logger.debug("Checking if PymordialAdbDevice device is connected...")
+        self.logger.debug("Checking if AdbDevice device is connected...")
         if self._device is None:
             self.logger.debug(
-                "PymordialAdbDevice device not initialized. Use connect() method to initialize."
+                "AdbDevice device not initialized. Use connect() method to initialize."
             )
             return False
         if not self._device.available:
-            self.logger.debug("PymordialAdbDevice device not connected.")
+            self.logger.debug("AdbDevice device not connected.")
             return False
-        self.logger.debug("PymordialAdbDevice device connected.")
+        self.logger.debug("AdbDevice device connected.")
         return True
 
     def disconnect(self) -> bool:
-        """Disconnects the PymordialAdbDevice device.
+        """Disconnects the AdbDevice device.
 
         Returns:
             True if disconnected (or already disconnected), False on error.
         """
-        self.logger.debug("Disconnecting from PymordialAdbDevice device...")
+        self.logger.debug("Disconnecting from AdbDevice device...")
         self.stop_stream()  # Stop streaming if active
 
         if self._device is None or not self._device.available:
@@ -212,13 +212,13 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         try:
             self._device.close()
             if not self._device.available:
-                self.logger.debug("Disconnected from PymordialAdbDevice device.")
+                self.logger.debug("Disconnected from AdbDevice device.")
                 return True
-            self.logger.debug("Failed to disconnect from PymordialAdbDevice device.")
+            self.logger.debug("Failed to disconnect from AdbDevice device.")
             return False
         except Exception as e:
             self.logger.error(
-                f"Error disconnecting from PymordialAdbDevice device: {e}"
+                f"Error disconnecting from AdbDevice device: {e}"
             )
             return False
 
@@ -363,13 +363,13 @@ class PymordialAdbDevice(PymordialBridgeDevice):
 
         if not self._device.available:
             self.logger.debug(
-                "PymordialAdbDevice device not connected. Attempting to reconnect..."
+                "AdbDevice device not connected. Attempting to reconnect..."
             )
             if not self.connect():
                 raise ConnectionError(
-                    "PymordialAdbDevice device not connected and reconnection failed."
+                    "AdbDevice device not connected and reconnection failed."
                 )
-            self.logger.debug("PymordialAdbDevice device reconnected.")
+            self.logger.debug("AdbDevice device reconnected.")
 
         for attempt in range(max_retries):
             try:
@@ -398,7 +398,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         self.logger.debug("Showing recent apps...")
         if not self._device.available:
             self.logger.debug(
-                "PymordialAdbDevice device not connected. Skipping 'show_recent_apps' method call."
+                "AdbDevice device not connected. Skipping 'show_recent_apps' method call."
             )
             return False
         self.run_command(f"input keyevent {self.config['keyevents']['app_switch']}")
@@ -517,7 +517,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         self.logger.debug(f"Typing text: {text} ...")
         if not self._device.available:
             self.logger.debug(
-                "PymordialAdbDevice device not connected. Skipping 'type_text' method call."
+                "AdbDevice device not connected. Skipping 'type_text' method call."
             )
             return False
 
@@ -545,16 +545,16 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         Returns:
             True if successful, False otherwise.
         """
-        self.logger.debug("PymordialAdbDevice navigating to home screen...")
+        self.logger.debug("AdbDevice navigating to home screen...")
         if not self._device.available:
             self.logger.debug(
-                "PymordialAdbDevice device not connected. Skipping 'go_home' method call."
+                "AdbDevice device not connected. Skipping 'go_home' method call."
             )
             return False
         # Go to home screen
         self.run_command(f"input keyevent {self.config['keyevents']['home']}")
         sleep(self.config["default_wait_time"])
-        self.logger.debug("PymordialAdbDevice successfully navigated to home screen.")
+        self.logger.debug("AdbDevice successfully navigated to home screen.")
         return True
 
     def capture_screenshot(self) -> bytes | None:
@@ -589,9 +589,9 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         Returns:
             True if stream started successfully, False otherwise.
         """
-        self.logger.debug("Starting PymordialAdbDevice stream...")
+        self.logger.debug("Starting AdbDevice stream...")
         if self._is_streaming.is_set():
-            self.logger.debug("PymordialAdbDevice stream already running")
+            self.logger.debug("AdbDevice stream already running")
             return True
 
         if not self._device.available:
@@ -640,17 +640,17 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         # Wait for first frame
         for _ in range(self.config["stream"]["start_timeout_iterations"]):
             if self._latest_frame is not None:
-                self.logger.info("PymordialAdbDevice stream started successfully")
+                self.logger.info("AdbDevice stream started successfully")
                 return True
             sleep(self.config["stream"]["start_wait"])
 
-        self.logger.error("PymordialAdbDevice stream timeout: no frames")
+        self.logger.error("AdbDevice stream timeout: no frames")
         self.stop_stream()
         return False
 
     def stop_stream(self) -> None:
         """Stops the screen stream."""
-        self.logger.debug("Stopping PymordialAdbDevice stream...")
+        self.logger.debug("Stopping AdbDevice stream...")
         self._is_streaming.clear()
         if self._stream_thread and self._stream_thread.is_alive():
             self._stream_thread.join(timeout=self.config["stream"]["stop_timeout"])
@@ -662,7 +662,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
             pass  # Best effort cleanup
 
         self._latest_frame = None
-        self.logger.debug("PymordialAdbDevice stream stopped")
+        self.logger.debug("AdbDevice stream stopped")
 
     def get_latest_frame(
         self, timeout: float = 2.0, min_wait: float = 0.1
@@ -767,7 +767,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         self.logger.debug("Pressing enter key...")
         if not self._device.available:
             self.logger.debug(
-                "PymordialAdbDevice device not connected. Skipping 'press_enter' method call."
+                "AdbDevice device not connected. Skipping 'press_enter' method call."
             )
             return False
         self.run_command(f"input keyevent {self.config['keyevents']['enter']}")
@@ -783,7 +783,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         self.logger.debug("Pressing esc key...")
         if not self._device.available:
             self.logger.debug(
-                "PymordialAdbDevice device not connected. Skipping 'press_esc' method call."
+                "AdbDevice device not connected. Skipping 'press_esc' method call."
             )
             return False
         # Send the esc key using ADB
@@ -822,17 +822,17 @@ class PymordialAdbDevice(PymordialBridgeDevice):
             return None
 
     def _create_adb_device(self) -> AdbDeviceTcp | None:
-        self.logger.debug("Creating PymordialAdbDevice device...")
+        self.logger.debug("Creating AdbDevice device...")
         device: AdbDeviceTcp | None = None
         try:
             device = AdbDeviceTcp(host=self.host, port=self.port)
         except Exception as e:
-            self.logger.error(f"Error creating PymordialAdbDevice device: {e}")
+            self.logger.error(f"Error creating AdbDevice device: {e}")
 
         if device:
-            self.logger.debug("PymordialAdbDevice device created.")
+            self.logger.debug("AdbDevice device created.")
         else:
-            self.logger.error("PymordialAdbDevice device not created.")
+            self.logger.error("AdbDevice device not created.")
         return device
 
     def _stream_worker(
@@ -897,7 +897,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
 
 
 if __name__ == "__main__":
-    controller = PymordialAdbDevice()
+    controller = AdbDevice()
     if controller.connect():
         controller.open_app("revomon")
     else:

@@ -1,11 +1,11 @@
-from .adb_device import PymordialAdbDevice
-from .bluestacks_device import PymordialBluestacksDevice
-from .ui_device import PymordialUiDevice
+from .adb_device import AdbDevice
+from .bluestacks_device import BluestacksDevice
+from .ui_device import UiDevice
 
 # PymordialController moved to core
 
 __all__ = [
-    "PymordialAdbDevice",
-    "PymordialBluestacksDevice",
-    "PymordialUiDevice",
+    "AdbDevice",
+    "BluestacksDevice",
+    "UiDevice",
 ]

@@ -9,7 +9,7 @@ This script demonstrates how to:
 
 from logging import INFO, basicConfig, getLogger
 
-from pymordialblue.bluestacks_controller import PymordialBluestacksController
+from pymordialblue.bluestacks_controller import BluestacksController
 
 logger = getLogger(__name__)
 
@@ -17,11 +17,11 @@ logger = getLogger(__name__)
 def main():
     """Connect to BlueStacks and verify the connection."""
     basicConfig(level=INFO)
-    logger.info("=== Pymordial Basic Connection Example ===\n")
+    logger.info("=== BlueStacks Connection Example ===\n")
 
     # Create controller - BlueStacks must be running
-    logger.info("1. Creating PymordialBluestacksController...")
-    controller = PymordialBluestacksController()
+    logger.info("1. Creating BluestacksController...")
+    controller = BluestacksController()
     logger.info("   ✓ Controller created\n")
 
     # Check if BlueStacks is running

@@ -14,15 +14,15 @@ from pymordial.core.blueprints.emulator_device import (
 from pymordial.core.blueprints.vision_device import PymordialVisionDevice
 from pymordial.utils import log_property_setter, validate_and_convert_int
 
-from pymordialblue.devices.adb_device import PymordialAdbDevice
+from pymordialblue.devices.adb_device import AdbDevice
 from pymordialblue.utils.configs import (
     BluestacksConfig,
-    PymordialBlueConfig,
+    BlueConfig,
     get_config,
 )
 
 
-class PymordialBluestacksDevice(PymordialEmulatorDevice):
+class BluestacksDevice(PymordialEmulatorDevice):
     """Controls the BlueStacks emulator.
 
     Attributes:
@@ -38,29 +38,29 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
 
     def __init__(
         self,
-        adb_bridge_device: PymordialAdbDevice | None = None,
+        adb_bridge_device: AdbDevice | None = None,
         vision_device: PymordialVisionDevice | None = None,
         config: BluestacksConfig | None = None,
     ) -> None:
-        """Initializes the PymordialBluestacksDevice.
+        """Initializes the BluestacksDevice.
 
         Args:
-            adb_bridge_device: The bridge device (e.g. PymordialAdbDevice) used for
+            adb_bridge_device: The bridge device (e.g. AdbDevice) used for
                 low-level ADB interactions.
             vision_device: The vision device used for screen analysis.
             config: A TypedDict containing BlueStacks configuration options.
                 Defaults to package defaults if None.
         """
-        self.logger = getLogger("PymordialBluestacksDevice")
+        self.logger = getLogger("BluestacksDevice")
         basicConfig(
             level=DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
-        self.logger.info("Initializing PymordialBluestacksDevice...")
+        self.logger.info("Initializing BluestacksDevice...")
         super().__init__()
         self.config = copy.deepcopy(config or get_config()["bluestacks"])
         self.running_apps: list[PymordialApp] | list = list()
 
-        self._adb_bridge_device: PymordialAdbDevice | None = adb_bridge_device
+        self._adb_bridge_device: AdbDevice | None = adb_bridge_device
         self._vision_device: PymordialVisionDevice | None = vision_device
         self._ref_window_size: tuple[int, int] = tuple(
             self.config["default_resolution"]
@@ -75,7 +75,7 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
         self._autoset_filepath()
 
         self.logger.debug(
-            f"PymordialBluestacksDevice initialized with the following state:\n{self.state}\n"
+            f"BluestacksDevice initialized with the following state:\n{self.state}\n"
         )
 
     def _connect_adb(self) -> None:
@@ -87,7 +87,7 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
                 "ADB bridge device not set, cannot connect during READY transition."
             )
 
-    def initialize(self, config: "PymordialBlueConfig") -> None:
+    def initialize(self, config: "BlueConfig") -> None:
         """Initializes the BlueStacks device plugin with configuration.
 
         Args:
@@ -97,7 +97,7 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
 
     def set_dependencies(
         self,
-        adb_bridge_device: PymordialAdbDevice,
+        adb_bridge_device: AdbDevice,
         vision_device: PymordialVisionDevice,
     ) -> None:
         """Sets external dependencies (dependency injection).
@@ -142,12 +142,12 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
                 width: int = int(width)
                 if width <= 0:
                     self.logger.warning(
-                        "ValueError while trying to set PymordialBluestacksDevice 'ref_window_size': Provided width must be positive integers!"
+                        "ValueError while trying to set BluestacksDevice 'ref_window_size': Provided width must be positive integers!"
                     )
                     raise ValueError("Provided width must be positive integers")
             else:
                 self.logger.warning(
-                    "ValueError while trying to set PymordialBluestacksDevice 'ref_window_size': Provided width must be an integer or the string representation of an integer!"
+                    "ValueError while trying to set BluestacksDevice 'ref_window_size': Provided width must be an integer or the string representation of an integer!"
                 )
                 raise ValueError(
                     "Provided width must be integer or the string representation of an integer!"
@@ -158,12 +158,12 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
                 height: int = int(height)
                 if height <= 0:
                     self.logger.warning(
-                        "ValueError while trying to set PymordialBluestacksDevice 'ref_window_size': Provided height must be positive integers!"
+                        "ValueError while trying to set BluestacksDevice 'ref_window_size': Provided height must be positive integers!"
                     )
                     raise ValueError("Provided height must be positive integers")
             else:
                 self.logger.warning(
-                    "ValueError while trying to set PymordialBluestacksDevice 'ref_window_size': Provided height must be an integer or the string representation of an integer!"
+                    "ValueError while trying to set BluestacksDevice 'ref_window_size': Provided height must be an integer or the string representation of an integer!"
                 )
                 raise ValueError(
                     "Provided height must be integer or the string representation of an integer!"
@@ -195,13 +195,13 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
         """
         if not isinstance(filepath, str):
             self.logger.warning(
-                "ValueError while trying to set PymordialBluestacksDevice 'filepath': Provided filepath must be a string!"
+                "ValueError while trying to set BluestacksDevice 'filepath': Provided filepath must be a string!"
             )
             raise ValueError("Provided filepath must be a string")
 
         if not os.path.exists(filepath):
             self.logger.warning(
-                "ValueError while trying to set PymordialBluestacksDevice 'filepath': Provided filepath does not exist!"
+                "ValueError while trying to set BluestacksDevice 'filepath': Provided filepath does not exist!"
             )
             raise ValueError("Provided filepath does not exist")
 
@@ -504,12 +504,12 @@ class PymordialBluestacksDevice(PymordialEmulatorDevice):
 
 
 if __name__ == "__main__":
-    from pymordialblue.devices.adb_device import PymordialAdbDevice
-    from pymordialblue.devices.ui_device import PymordialUiDevice
+from pymordialblue.devices.adb_device import AdbDevice
+    from pymordialblue.devices.ui_device import UiDevice
 
-    adb_bridge_device = PymordialAdbDevice(host="127.0.0.1", port=5555)
-    vision_device = PymordialUiDevice(bridge_device=adb_bridge_device)
-    device = PymordialBluestacksDevice(
+    adb_bridge_device = AdbDevice(host="127.0.0.1", port=5555)
+    vision_device = UiDevice(bridge_device=adb_bridge_device)
+    device = BluestacksDevice(
         adb_bridge_device=adb_bridge_device, vision_device=vision_device
     )
     device.open()

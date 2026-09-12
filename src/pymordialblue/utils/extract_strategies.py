@@ -5,7 +5,7 @@ import re
 
 import cv2
 import numpy as np
-from pymordial.core.blueprints.extract_strategy import PymordialExtractStrategy
+from pymordial.core.blueprints.extract_strategy import ExtractStrategy
 
 from pymordialblue.utils.configs import get_config
 
@@ -62,7 +62,7 @@ LEVEL_WHITELIST_CONFIG = _CONFIG["extract_strategy"]["revomon"]["level"][
 ]
 
 
-class DefaultExtractStrategy(PymordialExtractStrategy):
+class DefaultExtractStrategy(ExtractStrategy):
     """Generic preprocessing suitable for any image.
 
     Features:
@@ -108,7 +108,7 @@ class DefaultExtractStrategy(PymordialExtractStrategy):
         return TESSERACT_CONFIG_DEFAULT
 
 
-class RevomonTextStrategy(PymordialExtractStrategy):
+class RevomonTextStrategy(ExtractStrategy):
     """Strategy for Revomon UI images.
 
     Attributes:

@@ -18,16 +18,16 @@ from pymordial.ui.element import PymordialElement
 from pymordial.ui.image import PymordialImage
 from pymordial.ui.pixel import PymordialPixel
 
-from pymordialblue.devices.adb_device import PymordialAdbDevice
-from pymordialblue.devices.tesseract_device import PymordialTesseractDevice
+from pymordialblue.devices.adb_device import AdbDevice
+from pymordialblue.devices.tesseract_device import TesseractDevice
 from pymordialblue.utils.configs import VisionConfig, get_config
-from pymordialblue.utils.extract_strategies import PymordialExtractStrategy
+from pymordialblue.utils.extract_strategies import ExtractStrategy
 
 if TYPE_CHECKING:
-    from pymordialblue.utils.configs import PymordialBlueConfig
+    from pymordialblue.utils.configs import BlueConfig
 
 
-class PymordialUiDevice(PymordialVisionDevice):
+class UiDevice(PymordialVisionDevice):
     """Handles all visual recognition tasks.
 
     This class consolidates image recognition (template matching), pixel color detection,
@@ -49,25 +49,25 @@ class PymordialUiDevice(PymordialVisionDevice):
         bridge_device: PymordialBridgeDevice | None = None,
         config: VisionConfig | None = None,
     ):
-        """Initializes the PymordialUiDevice.
+        """Initializes the UiDevice.
 
         Args:
             bridge_device: Optional PymordialBridgeDevice for device interactions.
-                If None, a new PymordialAdbDevice will be created.
+                If None, a new AdbDevice will be created.
             config: Optional configuration dictionary. If None, loads defaults
                 from the global configuration.
         """
-        self.logger = getLogger("PymordialUiDevice")
+        self.logger = getLogger("UiDevice")
         basicConfig(
             level=DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
         self._bridge_device: PymordialBridgeDevice = (
-            bridge_device or PymordialAdbDevice()
+            bridge_device or AdbDevice()
         )
-        self._ocr_device: PymordialOCRDevice = PymordialTesseractDevice()
+        self._ocr_device: PymordialOCRDevice = TesseractDevice()
         self.config: VisionConfig = copy.deepcopy(config or get_config()["ui"])
 
-    def initialize(self, config: "PymordialBlueConfig") -> None:
+    def initialize(self, config: "BlueConfig") -> None:
         """Initializes the UI device plugin with configuration.
 
         Args:
@@ -490,7 +490,7 @@ class PymordialUiDevice(PymordialVisionDevice):
         self,
         text_to_find: str,
         pymordial_screenshot: "Path | bytes | str | np.ndarray",
-        strategy: PymordialExtractStrategy | None = None,
+        strategy: ExtractStrategy | None = None,
     ) -> tuple[int, int] | None:
         """Finds the coordinates of specific text in the image.
 
@@ -507,8 +507,8 @@ class PymordialUiDevice(PymordialVisionDevice):
         try:
             # Check if the OCR engine supports find_text (it should as per PymordialOCRDevice)
             if hasattr(self._ocr_device, "find_text"):
-                # Pass strategy if it's PymordialTesseractDevice, otherwise just the required args
-                if isinstance(self._ocr_device, PymordialTesseractDevice):
+                # Pass strategy if it's TesseractDevice, otherwise just the required args
+                if isinstance(self._ocr_device, TesseractDevice):
                     return self._ocr_device.find_text(
                         text_to_find, pymordial_screenshot, strategy=strategy
                     )
@@ -527,7 +527,7 @@ class PymordialUiDevice(PymordialVisionDevice):
         text_to_find: str,
         pymordial_screenshot: "Path | bytes | str | np.ndarray",
         case_sensitive: bool = False,
-        strategy: PymordialExtractStrategy | None = None,
+        strategy: ExtractStrategy | None = None,
     ) -> bool:
         """Checks if specific text is present in the image.
 
@@ -538,7 +538,7 @@ class PymordialUiDevice(PymordialVisionDevice):
             case_sensitive: If True, performs a case-sensitive search.
                 Defaults to False.
             strategy: Optional preprocessing strategy to apply before OCR.
-                This is currently only supported by PymordialTesseractDevice.
+                This is currently only supported by TesseractDevice.
 
         Returns:
             True if the text is found in the image, False otherwise.
@@ -569,7 +569,7 @@ class PymordialUiDevice(PymordialVisionDevice):
         try:
             # Extract text with optional strategy (if supported)
             if strategy is not None and isinstance(
-                self._ocr_device, PymordialTesseractDevice
+                self._ocr_device, TesseractDevice
             ):
                 extracted = self._ocr_device.extract_text(
                     pymordial_screenshot, strategy=strategy
@@ -588,7 +588,7 @@ class PymordialUiDevice(PymordialVisionDevice):
         self,
         pymordial_screenshot: "Path | bytes | str | np.ndarray",
         case_sensitive: bool = False,
-        strategy: PymordialExtractStrategy | None = None,
+        strategy: ExtractStrategy | None = None,
     ) -> list[str]:
         """Reads and extracts text lines from an image.
 
@@ -598,7 +598,7 @@ class PymordialUiDevice(PymordialVisionDevice):
             case_sensitive: If True, preserves the original case of the text.
                 If False, converts all text to lowercase. Defaults to False.
             strategy: Optional preprocessing strategy to apply before OCR.
-                This is currently only supported by PymordialTesseractDevice.
+                This is currently only supported by TesseractDevice.
 
         Returns:
             A list of strings, where each string corresponds to a line of text
@@ -612,7 +612,7 @@ class PymordialUiDevice(PymordialVisionDevice):
         try:
             # Extract text with optional strategy (if supported)
             if strategy is not None and isinstance(
-                self._ocr_device, PymordialTesseractDevice
+                self._ocr_device, TesseractDevice
             ):
                 text = self._ocr_device.extract_text(
                     pymordial_screenshot, strategy=strategy

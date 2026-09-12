@@ -11,7 +11,7 @@ from pymordial.core.blueprints.ocr_device import PymordialOCRDevice
 from pymordialblue.utils.configs import get_config
 from pymordialblue.utils.extract_strategies import (
     DefaultExtractStrategy,
-    PymordialExtractStrategy,
+    ExtractStrategy,
 )
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ _CONFIG = get_config()
 DEFAULT_CONFIG = _CONFIG["extract_strategy"]["tesseract"]["default_config"]
 
 
-class PymordialTesseractDevice(PymordialOCRDevice):
+class TesseractDevice(PymordialOCRDevice):
     """Tesseract OCR implementation.
 
     Advantages:
@@ -61,13 +61,13 @@ class PymordialTesseractDevice(PymordialOCRDevice):
     def extract_text(
         self,
         image_path: "Path | bytes | str | np.ndarray",
-        strategy: PymordialExtractStrategy | None = None,
+        strategy: ExtractStrategy | None = None,
     ) -> str:
         """Extracts text from an image using Tesseract with optional preprocessing.
 
         Args:
             image_path: Path to image file, image bytes, numpy array, or a string path.
-            strategy: Optional PymordialExtractStrategy instance. If None, a
+            strategy: Optional ExtractStrategy instance. If None, a
                 DefaultExtractStrategy is used, providing generic preprocessing
                 suitable for any image.
 
@@ -98,7 +98,7 @@ class PymordialTesseractDevice(PymordialOCRDevice):
         self,
         search_text: str,
         image_path: "Path | bytes | str | np.ndarray",
-        strategy: PymordialExtractStrategy | None = None,
+        strategy: ExtractStrategy | None = None,
     ) -> tuple[int, int] | None:
         """Finds the coordinates (center) of the specified text in the image.
 

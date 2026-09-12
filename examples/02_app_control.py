@@ -10,8 +10,8 @@ This script demonstrates how to:
 import time
 from logging import INFO, basicConfig, getLogger
 
-from pymordialblue.android_app import PymordialAndroidApp
-from pymordialblue.bluestacks_controller import PymordialBluestacksController
+from pymordialblue.android_app import AndroidApp
+from pymordialblue.bluestacks_controller import BluestacksController
 
 logger = getLogger(__name__)
 
@@ -22,8 +22,8 @@ def main():
     logger.info("=== Pymordial App Control Example ===\n")
 
     # Create controller and ensure BlueStacks is running
-    logger.info("1. Creating PymordialController...")
-    controller = PymordialBluestacksController()
+    logger.info("1. Creating BluestacksController...")
+    controller = BluestacksController()
 
     if not controller.bluestacks.is_ready():
         logger.info("   Opening BlueStacks...")
@@ -32,7 +32,7 @@ def main():
 
     # Define an app (using Android Settings as example)
     logger.info("2. Defining Android Settings app...")
-    settings_app = PymordialAndroidApp(
+    settings_app = AndroidApp(
         app_name="Settings", package_name="com.bluestacks.settings"
     )
     logger.info(f"   Created: {settings_app}")
