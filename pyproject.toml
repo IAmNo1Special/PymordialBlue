@@ -15,6 +15,7 @@ dependencies = [
     "pillow>=12.1.0",
     "psutil>=7.2.1",
     "pymordial>=0.4.1",
+    "pymordialdroid>=0.1.0",
     "pytesseract>=0.3.13",
     "pyyaml>=6.0.2",
 ]
@@ -37,8 +38,8 @@ dev = [
 ]
 
 [project.entry-points."pymordial.plugins"]
-adb = "pymordialblue.devices.adb_device:PymordialAdbDevice"
-ui = "pymordialblue.devices.ui_device:PymordialUiDevice"
+adb = "pymordialdroid.devices.adb_device:AdbDevice"
+ui = "pymordialdroid.devices.ui_device:AndroidUiDevice"
 bluestacks = "pymordialblue.devices.bluestacks_device:PymordialBluestacksDevice"
 
 [tool.isort]
