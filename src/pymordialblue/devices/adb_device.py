@@ -664,16 +664,43 @@ class PymordialAdbDevice(PymordialBridgeDevice):
         self._latest_frame = None
         self.logger.debug("PymordialAdbDevice stream stopped")
 
-    def get_latest_frame(self) -> np.ndarray | None:
-        """Gets the latest decoded frame from the stream.
+    def get_latest_frame(
+        self, timeout: float = 2.0, min_wait: float = 0.1
+    ) -> np.ndarray | None:
+        """Waits for a fresh frame from the stream, discarding stale buffered frames.
+
+        This is useful after UI-modifying actions (like clicks) to ensure we capture
+        the updated screen state rather than a stale buffered frame.
+
+        Args:
+            timeout: Maximum time to wait for a fresh frame (seconds).
+            min_wait: Minimum time to wait before accepting a frame, allowing
+                     the stream decoder to catch up (seconds).
 
         Returns:
-            The latest frame as a numpy array (RGB), or None if no frame available.
+            A fresh frame as numpy array (RGB), or None if timeout or stream not active.
         """
-        # No lock needed - reference read is atomic in Python (GIL)
-        # Copy to prevent caller from modifying the frame
-        frame = self._latest_frame
-        return frame.copy() if frame is not None else None
+        if not self.is_streaming:
+            self.logger.warning("Cannot wait for fresh frame: stream not active")
+            return None
+
+        # Clear current frame to force waiting for a new one
+        self._latest_frame = None
+        self.logger.debug(f"Waiting for fresh frame (timeout={timeout}s)...")
+
+        start_time = time()
+        while time() - start_time < timeout:
+            sleep(0.05)  # Poll interval
+            frame = self._latest_frame
+            elapsed = time() - start_time
+
+            # Only accept frame after minimum wait time
+            if frame is not None and elapsed >= min_wait:
+                self.logger.debug(f"Fresh frame received after {elapsed:.3f}s")
+                return frame.copy()
+
+        self.logger.warning(f"Timeout waiting for fresh frame after {timeout}s")
+        return None
 
     def capture_screen(self) -> "bytes | np.ndarray | None":
         """Captures the current BlueStacks screen using the appropriate capture strategy.
@@ -718,8 +745,17 @@ class PymordialAdbDevice(PymordialBridgeDevice):
             return frame
 
         self.logger.warning(
-            "Stream active but no frame available. Falling back to screenshot."
+            "Stream active but no frame available. Attempting restart..."
         )
+        self.stop_stream()
+        if self.start_stream():
+            # Wait a bit for fresh frames after restart
+            sleep(0.5)
+            frame = self.get_latest_frame()
+            if frame is not None:
+                self.logger.debug("Returning fresh frame after restart.")
+                return frame
+        self.logger.warning("Failed to restart stream. Falling back to screenshot.")
         return self.capture_screenshot()
 
     def press_enter(self) -> bool:
@@ -775,8 +811,10 @@ class PymordialAdbDevice(PymordialBridgeDevice):
             if os.path.exists(adbkey_path):
                 with open(adbkey_path) as f:
                     priv = f.read()
+                with open(adbkey_path + ".pub") as f:
+                    pub = f.read()
                 self.logger.debug("Signer found.")
-                return [PythonRSASigner("", priv)]
+                return [PythonRSASigner(pub, priv)]
             self.logger.debug("Signer not found.")
             return None
         except Exception as e:
@@ -848,6 +886,7 @@ class PymordialAdbDevice(PymordialBridgeDevice):
                 self.logger.error(f"Stream error: {e}")
         finally:
             stream_reader.close()
+            self._latest_frame = None  # Clear stale frame so capture_screen restarts
             self._is_streaming.clear()
             if stream_device:
                 try:

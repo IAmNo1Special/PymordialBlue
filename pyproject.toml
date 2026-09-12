@@ -1,14 +1,14 @@
 [project]
 name = "pymordialblue"
 version = "0.1.1"
-description = "PymordialBlue: Advanced Android Automation for BlueStacks using Pymordial"
+description = "PymordialBlue: Advanced Automation for BlueStacks using Pymordial"
 readme = "README.md"
 authors = [
-    { name = "Malcom Godlike", email = "ivmno1special@gmail.com" }
+    { name = "IAmNo1Special", email = "ivmno1special@gmail.com" }
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "adb-shell>=0.4.4",
+    "adb-shell[usb]>=0.4.4",
     "av>=16.1.0",
     "numpy>=2.4.1",
     "opencv-python-headless>=4.13.0.90",
