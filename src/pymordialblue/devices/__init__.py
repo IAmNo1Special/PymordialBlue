@@ -1,5 +1,15 @@
-from pymordialblue.devices.bluestacks_device import PymordialBluestacksDevice
+"""Device plugins for PymordialBlue.
+
+Re-exports device plugins from pymordialdroid and provides BlueStacks-specific
+device implementations.
+"""
+
+from pymordialdroid.devices import AdbDevice, AndroidUiDevice, TesseractDevice
+from .bluestacks_device import BluestacksDevice
 
 __all__ = [
-    "PymordialBluestacksDevice",
+    "AdbDevice",
+    "AndroidUiDevice",
+    "BluestacksDevice",
+    "TesseractDevice",
 ]
