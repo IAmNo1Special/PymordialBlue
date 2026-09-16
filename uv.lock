@@ -1068,7 +1068,7 @@ requires-dist = [
     { name = "pillow", specifier = ">=12.1.0" },
     { name = "psutil", specifier = ">=7.2.1" },
     { name = "pymordial", specifier = ">=0.4.1" },
-    { name = "pymordialdroid", editable = "../PymordialDroid" },
+    { name = "pymordialdroid", git = "https://github.com/IAmNo1Special/PymordialDroid.git" },
     { name = "pytesseract", specifier = ">=0.3.13" },
     { name = "pyyaml", specifier = ">=6.0.2" },
 ]
@@ -1088,7 +1088,7 @@ dev = [
 [[package]]
 name = "pymordialdroid"
 version = "0.1.0"
-source = { editable = "../PymordialDroid" }
+source = { git = "https://github.com/IAmNo1Special/PymordialDroid.git#57440dfd7865614d8022ca0ef2ef68af0318ba29" }
 dependencies = [
     { name = "adb-shell", extra = ["usb"] },
     { name = "aiofiles" },
@@ -1103,30 +1103,6 @@ dependencies = [
     { name = "pytesseract" },
     { name = "python-dotenv" },
     { name = "rich" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "adb-shell", extras = ["usb"], specifier = ">=0.4.4" },
-    { name = "aiofiles", specifier = ">=25.1.0" },
-    { name = "async-timeout", specifier = ">=5.0.1" },
-    { name = "av", specifier = ">=18.1.0" },
-    { name = "numpy", specifier = ">=2.4.1" },
-    { name = "opencv-python-headless", specifier = ">=4.13.0.90" },
-    { name = "pillow", specifier = ">=12.1.0" },
-    { name = "psutil", specifier = ">=7.2.1" },
-    { name = "pydantic", specifier = ">=2.12.5" },
-    { name = "pymordial", specifier = ">=0.4.1" },
-    { name = "pytesseract", specifier = ">=0.3.13" },
-    { name = "python-dotenv", specifier = ">=1.2.1" },
-    { name = "rich", specifier = ">=14.3.1" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=9.0.0" },
-    { name = "pytest-mock", specifier = ">=3.14.0" },
-    { name = "ruff", specifier = ">=0.9.0" },
 ]
 
 [[package]]

@@ -203,6 +203,34 @@ def patch_bluestacks_filepath():
         yield
 
 
+@pytest.fixture(autouse=True)
+def mock_system_config(tmp_path):
+    """Globally patch resolve_system_config to provide a valid SystemConfig for unit tests."""
+    fake_scrcpy = tmp_path / "scrcpy.exe"
+    fake_adb = tmp_path / "adb.exe"
+    fake_scrcpy.touch()
+    fake_adb.touch()
+
+    from pymordialdroid.config import SystemConfig
+
+    sys_cfg = SystemConfig(
+        scrcpy_bin_path=fake_scrcpy,
+        adb_bin_path=fake_adb,
+    )
+    with (
+        patch("pymordialdroid.config.resolve_system_config", return_value=sys_cfg),
+        patch(
+            "pymordialdroid.devices.adb_device.resolve_system_config",
+            return_value=sys_cfg,
+        ),
+        patch(
+            "pymordialdroid.devices.tesseract_device.resolve_system_config",
+            return_value=sys_cfg,
+        ),
+    ):
+        yield sys_cfg
+
+
 @pytest.fixture
 def mock_controller(mock_adb_device, mock_config):
     """Provides a mocked BluestacksController."""

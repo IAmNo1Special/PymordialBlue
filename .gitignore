@@ -21,3 +21,6 @@ wheels/
 .agents
 .kilo
 
+# Documentation build
+site/
+

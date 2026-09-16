@@ -70,7 +70,7 @@ def test_ui_device_read_text(mock_pytesseract, mock_cv2):
     text = device.read_text(
         pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
     )
-    assert text == ["mocked text"]
+    assert text == ["Mocked Text"]
     assert mock_pytesseract["image_to_string"].called
 
 
