@@ -313,6 +313,12 @@ class BluestacksDevice(PymordialEmulatorDevice):
         Args:
             timeout_s: The maximum number of seconds to wait for the emulator
                 to load. Defaults to the configuration value.
+
+        Raises:
+            TimeoutError: If the emulator does not become responsive via
+                ADB within the timeout. The state is left in LOADING, so
+                is_ready() stays False and the caller can retry or close
+                the device instead of acting on a false READY state.
         """
         self.logger.debug("Waiting for Bluestacks to load (ADB check)...")
         start_time = time.time()
@@ -339,10 +345,14 @@ class BluestacksDevice(PymordialEmulatorDevice):
                 self.logger.error(
                     f"Timeout waiting for Bluestacks to load after {timeout_s} seconds."
                 )
-                # We transition to READY anyway to allow retry logic elsewhere if needed,
-                # or maybe we should raise? For now, mimicking previous behavior.
-                self.state.transition_to(EmulatorState.READY)
-                return
+                # Do not mark the device READY here: a timed-out load
+                # never proved the emulator responsive, and is_ready()
+                # must not report True for it. Leave the state in
+                # LOADING and fail loudly so the caller can retry or
+                # close, instead of tapping at an unresponsive screen.
+                raise TimeoutError(
+                    f"Timeout waiting for Bluestacks to load after {timeout_s} seconds."
+                )
 
             time.sleep(self.config["default_load_wait_time"])
 
